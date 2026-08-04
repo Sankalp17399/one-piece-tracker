@@ -12,7 +12,6 @@ import {
   HelpCircle, 
   Award, 
   MessageSquare, 
-  Volume2, 
   ChevronDown, 
   ChevronUp, 
   Sparkles,
@@ -22,10 +21,14 @@ import {
   Skull,
   User,
   MapPin,
-  RefreshCw
+  RefreshCw,
+  Bookmark,
+  Star
 } from 'lucide-react';
 import WantedPoster from '@/components/WantedPoster';
 import SailingMap from '@/components/SailingMap';
+import OceanAmbience from '@/components/OceanAmbience';
+import DevilFruitGenerator from '@/components/DevilFruitGenerator';
 import { showSuccess, showError } from '@/utils/toast';
 import confetti from 'canvas-confetti';
 import html2canvas from 'html2canvas';
@@ -43,6 +46,7 @@ interface GuideItem {
 }
 
 const guideData: GuideItem[] = [
+  // --- East Blue Saga ---
   {
     id: "1",
     title: "Romance Dawn / Captain Morgan Arc",
@@ -63,33 +67,15 @@ const guideData: GuideItem[] = [
   },
   {
     id: "3",
-    title: "OVA - Defeat the Pirate Ganzak!",
-    episodes: "Optional OVA",
-    type: "optional",
-    recommendation: "Optional",
-    description: "Early animation style, fun but not essential.",
-    saga: "East Blue Saga"
-  },
-  {
-    id: "4",
     title: "Syrup Village / Captain Kuro Arc",
     episodes: "Episodes 9-18",
     type: "canon",
     recommendation: "Watch",
-    description: "Usopp joins the crew and they get the Going Merry.",
+    description: "Usopp joins the crew and they acquire the Going Merry.",
     saga: "East Blue Saga"
   },
   {
-    id: "5",
-    title: "One Piece Movie 1",
-    episodes: "Optional Movie",
-    type: "movie",
-    recommendation: "Optional",
-    description: "First theatrical release, simple pirate adventure.",
-    saga: "East Blue Saga"
-  },
-  {
-    id: "6",
+    id: "4",
     title: "Baratie Restaurant / Don Krieg Arc",
     episodes: "Episodes 19-30",
     type: "canon",
@@ -98,97 +84,45 @@ const guideData: GuideItem[] = [
     saga: "East Blue Saga"
   },
   {
-    id: "7",
+    id: "5",
     title: "Arlong Park / Nami's Arc",
     episodes: "Episodes 31-44",
     type: "canon",
     recommendation: "Watch",
-    description: "This is the Arc where One Piece really starts to come into its own. Highly emotional and essential.",
+    description: "This is the Arc where One Piece really starts to shine. Highly emotional and essential.",
+    saga: "East Blue Saga"
+  },
+  {
+    id: "6",
+    title: "Loguetown Arc",
+    episodes: "Episodes 45, 48-49, 52-53",
+    type: "canon",
+    recommendation: "Watch",
+    description: "The town of the beginning and the end. Facing Smoker and Dragon.",
+    saga: "East Blue Saga"
+  },
+  {
+    id: "7",
+    title: "Loguetown Fillers (Ep 50-51)",
+    episodes: "Episodes 50-51",
+    type: "filler",
+    recommendation: "Optional",
+    description: "Usopp's goggles and Sanji cooking contest.",
     saga: "East Blue Saga"
   },
   {
     id: "8",
-    title: "Special 1: Adventure in the Ocean's Navel",
-    episodes: "Special 1",
-    type: "special",
-    recommendation: "Watch",
-    description: "Fun side adventure with great classic vibes.",
-    saga: "East Blue Saga"
-  },
-  {
-    id: "9",
-    title: "Loguetown Arc (Part 1)",
-    episodes: "Episodes 45",
-    type: "canon",
-    recommendation: "Watch",
-    description: "The town of the beginning and the end.",
-    saga: "East Blue Saga"
-  },
-  {
-    id: "10",
-    title: "Buggy's Crew Adventure Chronicles",
-    episodes: "Episodes 46-47",
-    type: "optional",
-    recommendation: "Optional",
-    description: "Comedic side-story. Canon but not essential to the main plot.",
-    saga: "East Blue Saga"
-  },
-  {
-    id: "11",
-    title: "Loguetown Arc (Part 2)",
-    episodes: "Episodes 48-49",
-    type: "canon",
-    recommendation: "Watch",
-    description: "Luffy faces Smoker and mysterious Dragon.",
-    saga: "East Blue Saga"
-  },
-  {
-    id: "12",
-    title: "Loguetown Filler Episode 50",
-    episodes: "Episode 50",
-    type: "filler",
-    recommendation: "Optional",
-    description: "Usopp acquires his distinctive goggles. Comedic relief.",
-    saga: "East Blue Saga"
-  },
-  {
-    id: "13",
-    title: "Loguetown Filler Episode 51",
-    episodes: "Episode 51",
-    type: "filler",
-    recommendation: "Skip",
-    description: "Sanji cooking contest. Comedic relief, skip to save time.",
-    saga: "East Blue Saga"
-  },
-  {
-    id: "14",
-    title: "Loguetown Arc (Conclusion)",
-    episodes: "Episodes 52-53",
-    type: "canon",
-    recommendation: "Watch",
-    description: "The crew sets sail for the Grand Line.",
-    saga: "East Blue Saga"
-  },
-  {
-    id: "15",
-    title: "Movie 2: Clockwork Island Adventure",
-    episodes: "Movie 2",
-    type: "movie",
-    recommendation: "Watch",
-    description: "Fun movie with great pacing and unique island setting.",
-    saga: "East Blue Saga"
-  },
-  {
-    id: "16",
     title: "Warship Island / Apis Arc",
     episodes: "Episodes 54-61",
     type: "filler",
-    recommendation: "Optional",
-    description: "First filler arc. Explains Calm Belts (watch Ep 54-55 up to 8:05 for canon info).",
+    recommendation: "Skip",
+    description: "First anime filler arc. Explains Calm Belts.",
     saga: "East Blue Saga"
   },
+
+  // --- Alabasta Saga ---
   {
-    id: "17",
+    id: "9",
     title: "Reverse Mountain / Laboon Arc",
     episodes: "Episodes 62-63",
     type: "canon",
@@ -197,7 +131,7 @@ const guideData: GuideItem[] = [
     saga: "Alabasta Saga"
   },
   {
-    id: "18",
+    id: "10",
     title: "Whisky Peak Arc",
     episodes: "Episodes 64-67",
     type: "canon",
@@ -206,25 +140,16 @@ const guideData: GuideItem[] = [
     saga: "Alabasta Saga"
   },
   {
-    id: "19",
-    title: "Diary of Koby-Meppo",
-    episodes: "Episodes 68-69",
-    type: "canon",
-    recommendation: "Watch",
-    description: "Shows the training and growth of Koby and Helmeppo.",
-    saga: "Alabasta Saga"
-  },
-  {
-    id: "20",
+    id: "11",
     title: "Little Garden Arc",
     episodes: "Episodes 70-77",
     type: "canon",
     recommendation: "Watch",
-    description: "Island of giants, prehistoric beasts, and Baroque Works agents.",
+    description: "Island of giants Dorry & Brogy, prehistoric beasts, and Mr. 3.",
     saga: "Alabasta Saga"
   },
   {
-    id: "21",
+    id: "12",
     title: "Drum Island Arc",
     episodes: "Episodes 78-91",
     type: "canon",
@@ -233,169 +158,132 @@ const guideData: GuideItem[] = [
     saga: "Alabasta Saga"
   },
   {
-    id: "22",
-    title: "Alabasta Arc (Vivi's Arc - Part 1)",
-    episodes: "Episodes 92-97",
+    id: "13",
+    title: "Alabasta Arc",
+    episodes: "Episodes 92-130",
     type: "canon",
     recommendation: "Watch",
-    description: "Arriving in the desert kingdom. Meeting Ace.",
+    description: "The epic showdown against Crocodile and Baroque Works. Ace debuts.",
     saga: "Alabasta Saga"
   },
   {
-    id: "23",
-    title: "Alabasta Filler Episodes 98-99",
-    episodes: "Episodes 98-99",
-    type: "filler",
-    recommendation: "Watch",
-    description: "Adds depth by showing how the people of Alabasta live and deal with the drought.",
-    saga: "Alabasta Saga"
-  },
-  {
-    id: "24",
-    title: "Vivi & Koza's Flashback",
-    episodes: "Episode 100",
-    type: "canon",
-    recommendation: "Watch",
-    description: "Crucial backstory for the rebellion.",
-    saga: "Alabasta Saga"
-  },
-  {
-    id: "25",
-    title: "Alabasta Filler Episodes 101-102",
-    episodes: "Episodes 101-102",
-    type: "filler",
-    recommendation: "Skip",
-    description: "Comedic filler. Introduces plot inconsistencies (ignore the Poneglyph if watched).",
-    saga: "Alabasta Saga"
-  },
-  {
-    id: "26",
-    title: "Alabasta Arc (Vivi's Arc - Conclusion)",
-    episodes: "Episodes 103-130",
-    type: "canon",
-    recommendation: "Watch",
-    description: "The epic showdown against Crocodile and Baroque Works. Masterpiece level.",
-    saga: "Alabasta Saga"
-  },
-  {
-    id: "27",
+    id: "14",
     title: "Post-Alabasta Fillers",
     episodes: "Episodes 131-143",
     type: "filler",
     recommendation: "Skip",
-    description: "Low quality filler arcs. Skip to maintain pacing.",
+    description: "Low priority filler arcs. Skip to maintain story pacing.",
     saga: "Alabasta Saga"
   },
+
+  // --- Sky Island Saga ---
   {
-    id: "28",
-    title: "Movie 4: Dead End Adventure",
-    episodes: "Movie 4",
-    type: "movie",
-    recommendation: "Watch",
-    description: "One of the best early movies. Great pirate race atmosphere.",
-    saga: "Sky Island Saga"
-  },
-  {
-    id: "29",
-    title: "Jaya / Mock Town / Bellamy's Arc",
+    id: "15",
+    title: "Jaya / Mock Town Arc",
     episodes: "Episodes 144-152",
     type: "canon",
     recommendation: "Watch",
-    description: "Introduces Blackbeard, Bellamy, and the concept of Sky Island.",
+    description: "Introduces Blackbeard, Bellamy, Doflamingo, and Sky Island clues.",
     saga: "Sky Island Saga"
   },
   {
-    id: "30",
+    id: "16",
     title: "Skypiea Arc",
     episodes: "Episodes 153-195",
     type: "canon",
     recommendation: "Watch",
-    description: "The legendary island in the clouds. Battle against God Enel.",
+    description: "The legendary island in the sky. Battle against God Enel.",
     saga: "Sky Island Saga"
   },
   {
-    id: "31",
+    id: "17",
     title: "G-8 Arc (Navarone)",
     episodes: "Episodes 196-206",
     type: "filler",
     recommendation: "Watch",
-    description: "Widely considered the best filler arc in anime history. Highly recommended.",
+    description: "Widely considered the BEST filler arc in anime history! Highly recommended.",
     saga: "Sky Island Saga"
   },
+
+  // --- Water 7 Saga ---
   {
-    id: "32",
-    title: "Long Ring Long Land Arc (Davy Back Fight)",
+    id: "18",
+    title: "Long Ring Long Land (Davy Back Fight)",
     episodes: "Episodes 207-219",
     type: "canon",
     recommendation: "Optional",
-    description: "Comedic relief arc created by Oda. Introduces Foxy.",
+    description: "Comedic pirate game created by Oda. Introduces Foxy.",
     saga: "Water 7 Saga"
   },
   {
-    id: "33",
-    title: "Special 2 & 3",
-    episodes: "Specials",
-    type: "special",
-    recommendation: "Watch",
-    description: "Fun specials that fit well in the timeline.",
+    id: "19",
+    title: "Ocean's Dream / Foxy Returns (Filler)",
+    episodes: "Episodes 220-226",
+    type: "filler",
+    recommendation: "Skip",
+    description: "Memory loss filler arc.",
     saga: "Water 7 Saga"
   },
   {
-    id: "34",
-    title: "Movie 6: Baron Omatsuri",
-    episodes: "Movie 6",
-    type: "movie",
-    recommendation: "Watch",
-    description: "Directed by Mamoru Hosoda. Dark, unique art style, absolute masterpiece.",
-    saga: "Water 7 Saga"
-  },
-  {
-    id: "35",
-    title: "Water 7 / Going Merry Arc",
+    id: "20",
+    title: "Water 7 Arc",
     episodes: "Episodes 227-263",
     type: "canon",
     recommendation: "Watch",
-    description: "Incredible drama, crew conflict, and introduction of CP9.",
+    description: "Incredible drama, crew conflict, Franky introduction, and CP9 revelation.",
     saga: "Water 7 Saga"
   },
   {
-    id: "36",
+    id: "21",
     title: "Enies Lobby Arc",
     episodes: "Episodes 264-312",
     type: "canon",
     recommendation: "Watch",
-    description: "The ultimate rescue mission. Gear 2nd and 3rd debut. Masterpiece.",
+    description: "The ultimate rescue mission. Gear 2nd and 3rd debut. Robin's iconic backstory.",
     saga: "Water 7 Saga"
   },
   {
-    id: "37",
+    id: "22",
     title: "Post-Enies Lobby Arc",
     episodes: "Episodes 313-325",
     type: "canon",
     recommendation: "Watch",
-    description: "New bounties, Thousand Sunny debut, and Shanks meets Whitebeard.",
+    description: "Thousand Sunny debut, new bounties, and Ace vs Blackbeard.",
     saga: "Water 7 Saga"
   },
+
+  // --- Thriller Bark Saga ---
   {
-    id: "38",
+    id: "23",
+    title: "Lovely Land Filler",
+    episodes: "Episodes 326-336",
+    type: "filler",
+    recommendation: "Skip",
+    description: "Ice Hunter filler arc.",
+    saga: "Thriller Bark Saga"
+  },
+  {
+    id: "24",
     title: "Thriller Bark Arc",
     episodes: "Episodes 337-381",
     type: "canon",
     recommendation: "Watch",
-    description: "Brook joins the crew. Battle against Gecko Moria and Ryuma.",
+    description: "Brook joins! Battle against Gecko Moria and Bartholomew Kuma.",
     saga: "Thriller Bark Saga"
   },
+
+  // --- Summit War Saga ---
   {
-    id: "39",
+    id: "25",
     title: "Sabaody Archipelago Arc",
     episodes: "Episodes 385-405",
     type: "canon",
     recommendation: "Watch",
-    description: "Introduces Supernovas, Rayleigh, and Celestial Dragons. Shocking ending.",
+    description: "Supernovas, Rayleigh, and Celestial Dragons. Shocking ending.",
     saga: "Summit War Saga"
   },
   {
-    id: "40",
+    id: "26",
     title: "Amazon Lily Arc",
     episodes: "Episodes 408-421",
     type: "canon",
@@ -404,16 +292,16 @@ const guideData: GuideItem[] = [
     saga: "Summit War Saga"
   },
   {
-    id: "41",
+    id: "27",
     title: "Impel Down Arc",
     episodes: "Episodes 422-452",
     type: "canon",
     recommendation: "Watch",
-    description: "Luffy infiltrates the world's greatest underwater prison to save Ace.",
+    description: "Infiltrating the world's greatest underwater prison to save Ace.",
     saga: "Summit War Saga"
   },
   {
-    id: "42",
+    id: "28",
     title: "Marineford Arc (The Summit War)",
     episodes: "Episodes 457-489",
     type: "canon",
@@ -422,13 +310,113 @@ const guideData: GuideItem[] = [
     saga: "Summit War Saga"
   },
   {
-    id: "43",
-    title: "Post-War Arc / Luffy's Childhood Flashback",
+    id: "29",
+    title: "Post-War Arc & 3D2Y Flashback",
     episodes: "Episodes 490-516",
     type: "canon",
     recommendation: "Watch",
-    description: "Luffy, Ace, and Sabo's childhood. The 3D2Y message.",
+    description: "Luffy, Ace, and Sabo's childhood. The 3D2Y time-skip training message.",
     saga: "Summit War Saga"
+  },
+
+  // --- Fishman Island Saga (Post-Timeskip) ---
+  {
+    id: "30",
+    title: "Return to Sabaody Arc",
+    episodes: "Episodes 517-522",
+    type: "canon",
+    recommendation: "Watch",
+    description: "The Straw Hats reunite after 2 years of training! Brand new designs.",
+    saga: "Fishman Island Saga"
+  },
+  {
+    id: "31",
+    title: "Fishman Island Arc",
+    episodes: "Episodes 523-574",
+    type: "canon",
+    recommendation: "Watch",
+    description: "Journey 10,000 meters underwater. Jinbe backstory & Hody Jones showdown.",
+    saga: "Fishman Island Saga"
+  },
+
+  // --- Dressrosa Saga ---
+  {
+    id: "32",
+    title: "Punk Hazard Arc",
+    episodes: "Episodes 579-625",
+    type: "canon",
+    recommendation: "Watch",
+    description: "Luffy and Trafalgar Law form a Pirate Alliance! Caesar Clown and Kin'emon debut.",
+    saga: "Dressrosa Saga"
+  },
+  {
+    id: "33",
+    title: "Dressrosa Arc",
+    episodes: "Episodes 629-746",
+    type: "canon",
+    recommendation: "Watch",
+    description: "Colosseum battles, Mera Mera no Mi, Gear 4th debut, and Heavenly Demon Doflamingo.",
+    saga: "Dressrosa Saga"
+  },
+
+  // --- Whole Cake Island Saga ---
+  {
+    id: "34",
+    title: "Zou Arc",
+    episodes: "Episodes 751-779",
+    type: "canon",
+    recommendation: "Watch",
+    description: "Giant phantom elephant island. Introduction of Minks, Poneglyphs, and Sanji's lineage.",
+    saga: "Whole Cake Island Saga"
+  },
+  {
+    id: "35",
+    title: "Whole Cake Island Arc",
+    episodes: "Episodes 783-877",
+    type: "canon",
+    recommendation: "Watch",
+    description: "Infiltrating Big Mom's territory. Sanji's emotional backstory & Luffy vs Katakuri.",
+    saga: "Whole Cake Island Saga"
+  },
+  {
+    id: "36",
+    title: "Reverie Arc",
+    episodes: "Episodes 878-889",
+    type: "canon",
+    recommendation: "Watch",
+    description: "World Leaders gather in Mary Geoise. World Bounties updated & Im-sama debut.",
+    saga: "Whole Cake Island Saga"
+  },
+
+  // --- Wano Country Saga ---
+  {
+    id: "37",
+    title: "Wano Country Arc (Act 1 & 2)",
+    episodes: "Episodes 890-956",
+    type: "canon",
+    recommendation: "Watch",
+    description: "Samurai island. Luffy vs Kaido initial clash & Udon Prison training.",
+    saga: "Wano Country Saga"
+  },
+  {
+    id: "38",
+    title: "Wano Country Arc (Act 3 - Onigashima War)",
+    episodes: "Episodes 957-1085",
+    type: "canon",
+    recommendation: "Watch",
+    description: "Peak anime animation! Raid on Onigashima, Gear 5th debut, and Emperor defeat.",
+    saga: "Wano Country Saga"
+  },
+
+  // --- Final Saga ---
+  {
+    id: "39",
+    title: "Egghead Arc (Future Island)",
+    episodes: "Episodes 1086-Present",
+    type: "canon",
+    recommendation: "Watch",
+    description: "Dr. Vegapunk's futuristic island, Void Century secrets unveiled, and Five Elders.",
+    saga: "Final Saga"
   }
 ];
 
@@ -443,10 +431,15 @@ const Index = () => {
   const [joinedDate, setJoinedDate] = useState<string>(() => {
     return localStorage.getItem('joinedDate') || 'Aug 18, 2013';
   });
+  const [pirateTitle, setPirateTitle] = useState<string>('Pirate Rookie');
 
-  // State for checklist
+  // State for checklist & bookmarks
   const [completedIds, setCompletedIds] = useState<Set<string>>(() => {
     const saved = localStorage.getItem('completedArcs');
+    return saved ? new Set(JSON.parse(saved)) : new Set();
+  });
+  const [bookmarkedIds, setBookmarkedIds] = useState<Set<string>>(() => {
+    const saved = localStorage.getItem('bookmarkedArcs');
     return saved ? new Set(JSON.parse(saved)) : new Set();
   });
 
@@ -455,12 +448,17 @@ const Index = () => {
   const [typeFilter, setTypeFilter] = useState<string>('all');
   const [recFilter, setRecFilter] = useState<string>('all');
   const [sagaFilter, setSagaFilter] = useState<string>('all');
+  const [bookmarksOnly, setBookmarksOnly] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   // Save state to localStorage
   useEffect(() => {
     localStorage.setItem('completedArcs', JSON.stringify(Array.from(completedIds)));
   }, [completedIds]);
+
+  useEffect(() => {
+    localStorage.setItem('bookmarkedArcs', JSON.stringify(Array.from(bookmarkedIds)));
+  }, [bookmarkedIds]);
 
   useEffect(() => {
     localStorage.setItem('pirateName', pirateName);
@@ -482,9 +480,8 @@ const Index = () => {
   // Determine current arc based on progress
   const getCurrentArc = () => {
     if (completedCount === 0) return "East Blue";
-    if (completedCount === totalItems) return "Laugh Tale (King of the Pirates!)";
+    if (completedCount === totalItems) return "Laugh Tale (Pirate King!)";
     
-    // Find the first uncompleted item
     const nextItem = guideData.find(item => !completedIds.has(item.id));
     return nextItem ? nextItem.title : "Grand Line";
   };
@@ -499,18 +496,17 @@ const Index = () => {
       newCompleted.add(id);
       setCompletedIds(newCompleted);
       
-      // Trigger confetti on milestone or random fun
       if (newCompleted.size === totalItems) {
         confetti({
-          particleCount: 150,
-          spread: 80,
+          particleCount: 200,
+          spread: 100,
           origin: { y: 0.6 }
         });
         showSuccess("CONGRATULATIONS! You have conquered the Grand Line and become the King of the Pirates!");
       } else if (newCompleted.size % 5 === 0) {
         confetti({
-          particleCount: 50,
-          spread: 60,
+          particleCount: 60,
+          spread: 70,
           origin: { y: 0.7 }
         });
         showSuccess(`Milestone reached! ${newCompleted.size} adventures completed!`);
@@ -518,6 +514,19 @@ const Index = () => {
         showSuccess("Adventure logged in your Pirate Journal!");
       }
     }
+  };
+
+  // Toggle bookmark
+  const toggleBookmark = (id: string, title: string) => {
+    const newBookmarks = new Set(bookmarkedIds);
+    if (newBookmarks.has(id)) {
+      newBookmarks.delete(id);
+      showSuccess(`Removed "${title}" from bookmarks.`);
+    } else {
+      newBookmarks.add(id);
+      showSuccess(`Bookmarked "${title}" as a favorite arc!`);
+    }
+    setBookmarkedIds(newBookmarks);
   };
 
   // Mark all as completed
@@ -529,14 +538,14 @@ const Index = () => {
       spread: 80,
       origin: { y: 0.6 }
     });
-    showSuccess("All adventures marked as completed! You are a legendary pirate!");
+    showSuccess("All adventures marked as completed!");
   };
 
   // Reset progress
   const resetProgress = () => {
-    if (window.confirm("Are you sure you want to reset your sailing progress? This cannot be undone!")) {
+    if (window.confirm("Are you sure you want to reset your sailing progress?")) {
       setCompletedIds(new Set());
-      showSuccess("Progress reset. Back to the East Blue!");
+      showSuccess("Progress reset back to the East Blue!");
     }
   };
 
@@ -548,8 +557,9 @@ const Index = () => {
     const matchesType = typeFilter === 'all' || item.type === typeFilter;
     const matchesRec = recFilter === 'all' || item.recommendation === recFilter;
     const matchesSaga = sagaFilter === 'all' || item.saga === sagaFilter;
+    const matchesBookmark = !bookmarksOnly || bookmarkedIds.has(item.id);
 
-    return matchesSearch && matchesType && matchesRec && matchesSaga;
+    return matchesSearch && matchesType && matchesRec && matchesSaga && matchesBookmark;
   });
 
   // Export to PDF
@@ -557,7 +567,7 @@ const Index = () => {
     const element = document.getElementById('pirate-logbook-content');
     if (!element) return;
 
-    const toastId = showSuccess("Preparing your Pirate Logbook PDF...");
+    showSuccess("Preparing your Pirate Logbook PDF...");
 
     try {
       const canvas = await html2canvas(element, {
@@ -569,8 +579,8 @@ const Index = () => {
       
       const imgData = canvas.toDataURL('image/png');
       const pdf = new jsPDF('p', 'mm', 'a4');
-      const imgWidth = 210; // A4 width in mm
-      const pageHeight = 295; // A4 height in mm
+      const imgWidth = 210;
+      const pageHeight = 295;
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
       let heightLeft = imgHeight;
       let position = 0;
@@ -602,28 +612,29 @@ const Index = () => {
             <Skull size={32} />
           </div>
           <div>
-            <h1 className="text-3xl sm:text-4xl font-black tracking-wider text-[#f2e3c6] drop-shadow-md uppercase">
+            <h1 className="text-3xl sm:text-4xl font-black tracking-wider text-[#f2e3c6] drop-shadow-md uppercase flex items-center gap-2">
               Grand Line Logbook
             </h1>
             <p className="text-xs sm:text-sm text-[#dfcbb5] font-sans tracking-widest uppercase">
-              The Ultimate One Piece Watching Guide & Tracker
+              The Ultimate One Piece Watching Guide & Arc Tracker
             </p>
           </div>
         </div>
 
-        {/* Quick Stats */}
+        {/* Quick Stats & Audio Toggle */}
         <div className="flex flex-wrap items-center gap-3">
+          <OceanAmbience />
           <button 
             onClick={exportToPDF}
             className="flex items-center gap-2 bg-[#8b5a2b] hover:bg-[#a16e3f] text-[#f2e3c6] px-4 py-2 rounded-lg font-sans font-bold text-sm transition-all shadow-md hover:shadow-lg active:scale-95"
           >
-            <Download size={16} /> Export Logbook
+            <Download size={16} /> Export PDF
           </button>
           <button 
             onClick={resetProgress}
             className="flex items-center gap-2 bg-[#7f1d1d] hover:bg-red-800 text-white px-4 py-2 rounded-lg font-sans font-bold text-sm transition-all shadow-md hover:shadow-lg active:scale-95"
           >
-            <RefreshCw size={16} /> Reset Journey
+            <RefreshCw size={16} /> Reset
           </button>
         </div>
       </header>
@@ -631,7 +642,7 @@ const Index = () => {
       {/* Main Content Grid */}
       <main className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8">
         
-        {/* Left Column: Pirate Profile & Customizer (4 Cols) */}
+        {/* Left Column: Pirate Profile & Tools (4 Cols) */}
         <div className="lg:col-span-4 space-y-6">
           
           {/* Interactive Wanted Poster */}
@@ -642,87 +653,87 @@ const Index = () => {
             <WantedPoster 
               followers={completedCount} 
               following={totalItems - completedCount} 
-              username={pirateName} 
+              username={`${pirateName} ${pirateTitle !== 'Pirate Rookie' ? `"${pirateTitle}"` : ''}`} 
               location={pirateLocation} 
               joinedDate={joinedDate} 
             />
           </div>
 
+          {/* Devil Fruit Generator */}
+          <DevilFruitGenerator onAssignTitle={(title) => setPirateTitle(title)} />
+
           {/* Profile Customizer Card */}
-          <div className="bg-[#f2e3c6] border-4 border-[#8b5a2b] rounded-xl p-6 shadow-xl">
-            <div className="flex items-center gap-2 mb-4 border-b-2 border-[#8b5a2b] pb-2">
+          <div className="bg-[#f2e3c6] border-4 border-[#8b5a2b] rounded-xl p-5 shadow-xl">
+            <div className="flex items-center gap-2 mb-3 border-b-2 border-[#8b5a2b] pb-2">
               <Anchor className="text-[#8b5a2b]" size={20} />
-              <h3 className="font-bold text-lg text-[#3e2723]">Customize Your Pirate</h3>
+              <h3 className="font-bold text-base text-[#3e2723]">Customize Pirate Log</h3>
             </div>
             
-            <div className="space-y-4 font-sans text-sm">
+            <div className="space-y-3 font-sans text-xs">
               <div>
-                <label className="block text-xs font-bold uppercase text-[#5d4037] mb-1">Pirate Name</label>
+                <label className="block font-bold uppercase text-[#5d4037] mb-1">Pirate Name</label>
                 <div className="relative">
-                  <User className="absolute left-3 top-2.5 text-[#8b5a2b]" size={16} />
+                  <User className="absolute left-3 top-2.5 text-[#8b5a2b]" size={14} />
                   <input 
                     type="text" 
                     value={pirateName}
                     onChange={(e) => setPirateName(e.target.value)}
-                    className="w-full pl-10 pr-3 py-2 bg-[#dfcbb5] border-2 border-[#8b5a2b] rounded-lg text-[#3e2723] font-bold focus:outline-none focus:ring-2 focus:ring-[#8b5a2b]"
-                    placeholder="Enter your name..."
+                    className="w-full pl-9 pr-3 py-1.5 bg-[#dfcbb5] border-2 border-[#8b5a2b] rounded-lg text-[#3e2723] font-bold focus:outline-none focus:ring-2 focus:ring-[#8b5a2b]"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase text-[#5d4037] mb-1">Starting Sea / Location</label>
+                <label className="block font-bold uppercase text-[#5d4037] mb-1">Starting Sea</label>
                 <div className="relative">
-                  <MapPin className="absolute left-3 top-2.5 text-[#8b5a2b]" size={16} />
+                  <MapPin className="absolute left-3 top-2.5 text-[#8b5a2b]" size={14} />
                   <input 
                     type="text" 
                     value={pirateLocation}
                     onChange={(e) => setPirateLocation(e.target.value)}
-                    className="w-full pl-10 pr-3 py-2 bg-[#dfcbb5] border-2 border-[#8b5a2b] rounded-lg text-[#3e2723] font-bold focus:outline-none focus:ring-2 focus:ring-[#8b5a2b]"
-                    placeholder="e.g. East Blue, Wano..."
+                    className="w-full pl-9 pr-3 py-1.5 bg-[#dfcbb5] border-2 border-[#8b5a2b] rounded-lg text-[#3e2723] font-bold focus:outline-none focus:ring-2 focus:ring-[#8b5a2b]"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold uppercase text-[#5d4037] mb-1">Sailing Since</label>
+                <label className="block font-bold uppercase text-[#5d4037] mb-1">Sailing Since</label>
                 <input 
                   type="text" 
                   value={joinedDate}
                   onChange={(e) => setJoinedDate(e.target.value)}
-                  className="w-full px-3 py-2 bg-[#dfcbb5] border-2 border-[#8b5a2b] rounded-lg text-[#3e2723] font-bold focus:outline-none focus:ring-2 focus:ring-[#8b5a2b]"
-                  placeholder="e.g. Aug 18, 2013"
+                  className="w-full px-3 py-1.5 bg-[#dfcbb5] border-2 border-[#8b5a2b] rounded-lg text-[#3e2723] font-bold focus:outline-none focus:ring-2 focus:ring-[#8b5a2b]"
                 />
               </div>
             </div>
           </div>
 
-          {/* Legend / Guide Info */}
-          <div className="bg-[#f2e3c6] border-4 border-[#8b5a2b] rounded-xl p-6 shadow-xl">
-            <div className="flex items-center gap-2 mb-4 border-b-2 border-[#8b5a2b] pb-2">
-              <Info className="text-[#8b5a2b]" size={20} />
-              <h3 className="font-bold text-lg text-[#3e2723]">Watching Legend</h3>
+          {/* Watching Legend */}
+          <div className="bg-[#f2e3c6] border-4 border-[#8b5a2b] rounded-xl p-5 shadow-xl">
+            <div className="flex items-center gap-2 mb-3 border-b-2 border-[#8b5a2b] pb-2">
+              <Info className="text-[#8b5a2b]" size={18} />
+              <h3 className="font-bold text-base text-[#3e2723]">Guide Legend</h3>
             </div>
-            <div className="space-y-3 font-sans text-xs">
+            <div className="space-y-2.5 font-sans text-xs">
               <div className="flex items-center gap-2">
-                <span className="w-3 h-3 rounded-full bg-green-600" />
+                <span className="w-3 h-3 rounded-full bg-green-600 shrink-0" />
                 <div>
                   <p className="font-bold text-[#3e2723]">Canon</p>
-                  <p className="text-gray-600">Directly adapted from Eiichiro Oda's manga. Essential watching!</p>
+                  <p className="text-gray-600 text-[11px]">Direct manga adaptation. Essential!</p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <span className="w-3 h-3 rounded-full bg-red-600" />
+                <span className="w-3 h-3 rounded-full bg-red-600 shrink-0" />
                 <div>
                   <p className="font-bold text-[#3e2723]">Filler</p>
-                  <p className="text-gray-600">Anime-only content. Safe to skip if you want to catch up fast.</p>
+                  <p className="text-gray-600 text-[11px]">Anime-only story. Safe to skip.</p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <span className="w-3 h-3 rounded-full bg-amber-500" />
+                <span className="w-3 h-3 rounded-full bg-amber-500 shrink-0" />
                 <div>
-                  <p className="font-bold text-[#3e2723]">Mixed / Movie / Special</p>
-                  <p className="text-gray-600">Optional but highly entertaining side stories and theatrical releases.</p>
+                  <p className="font-bold text-[#3e2723]">Optional / Special</p>
+                  <p className="text-gray-600 text-[11px]">Fun side content for fans.</p>
                 </div>
               </div>
             </div>
@@ -730,18 +741,18 @@ const Index = () => {
 
         </div>
 
-        {/* Right Column: Sailing Map & Interactive Guide (8 Cols) */}
+        {/* Right Column: Navigation & Guide List (8 Cols) */}
         <div className="lg:col-span-8 space-y-6" id="pirate-logbook-content">
           
           {/* Sailing Map Progress */}
           <SailingMap progress={progressPercentage} currentArc={getCurrentArc()} />
 
-          {/* Interactive Guide & Checklist */}
+          {/* Interactive Guide Card */}
           <div className="bg-[#fdf8eb] border-4 border-[#8b5a2b] rounded-xl p-6 shadow-xl">
             
             {/* Search & Filter Controls */}
             <div className="space-y-4 mb-6 border-b-2 border-[#8b5a2b] pb-6">
-              <div className="flex flex-col md:flex-row gap-4">
+              <div className="flex flex-col md:flex-row gap-3">
                 {/* Search Bar */}
                 <div className="relative flex-1">
                   <Search className="absolute left-3 top-3 text-[#8b5a2b]" size={18} />
@@ -754,13 +765,24 @@ const Index = () => {
                   />
                 </div>
 
-                {/* Quick Actions */}
-                <div className="flex gap-2">
+                <div className="flex items-center gap-2">
+                  <button 
+                    onClick={() => setBookmarksOnly(!bookmarksOnly)}
+                    className={`flex items-center gap-1.5 px-3 py-2 rounded-lg font-sans font-bold text-xs transition-all border-2 border-[#8b5a2b] ${
+                      bookmarksOnly 
+                        ? 'bg-[#8b5a2b] text-[#f2e3c6]' 
+                        : 'bg-[#f2e3c6] text-[#3e2723] hover:bg-[#dfcbb5]'
+                    }`}
+                  >
+                    <Bookmark size={14} className={bookmarksOnly ? 'fill-current' : ''} />
+                    Favorites ({bookmarkedIds.size})
+                  </button>
+
                   <button 
                     onClick={markAllCompleted}
-                    className="bg-[#8b5a2b] hover:bg-[#a16e3f] text-[#f2e3c6] px-4 py-2 rounded-lg font-sans font-bold text-xs transition-all shadow-md active:scale-95"
+                    className="bg-[#8b5a2b] hover:bg-[#a16e3f] text-[#f2e3c6] px-3 py-2 rounded-lg font-sans font-bold text-xs transition-all shadow-md active:scale-95"
                   >
-                    Mark All Completed
+                    Mark All
                   </button>
                 </div>
               </div>
@@ -777,8 +799,6 @@ const Index = () => {
                     <option value="all">All Types</option>
                     <option value="canon">Canon Only</option>
                     <option value="filler">Filler Only</option>
-                    <option value="movie">Movies Only</option>
-                    <option value="special">Specials Only</option>
                   </select>
                 </div>
 
@@ -810,6 +830,11 @@ const Index = () => {
                     <option value="Water 7 Saga">Water 7 Saga</option>
                     <option value="Thriller Bark Saga">Thriller Bark Saga</option>
                     <option value="Summit War Saga">Summit War Saga</option>
+                    <option value="Fishman Island Saga">Fishman Island Saga</option>
+                    <option value="Dressrosa Saga">Dressrosa Saga</option>
+                    <option value="Whole Cake Island Saga">Whole Cake Island Saga</option>
+                    <option value="Wano Country Saga">Wano Country Saga</option>
+                    <option value="Final Saga">Final Saga (Egghead)</option>
                   </select>
                 </div>
               </div>
@@ -821,11 +846,12 @@ const Index = () => {
                 <div className="text-center py-12 text-[#8b5a2b]">
                   <Compass className="mx-auto w-12 h-12 mb-2 animate-spin" />
                   <p className="font-bold">No adventures found matching your filters.</p>
-                  <p className="text-xs text-gray-600 mt-1">Try adjusting your search or filters to find your way!</p>
+                  <p className="text-xs text-gray-600 mt-1">Try clearing filters or search terms.</p>
                 </div>
               ) : (
                 filteredItems.map((item) => {
                   const isCompleted = completedIds.has(item.id);
+                  const isBookmarked = bookmarkedIds.has(item.id);
                   const isExpanded = expandedId === item.id;
 
                   return (
@@ -838,7 +864,10 @@ const Index = () => {
                       }`}
                     >
                       {/* Header Row */}
-                      <div className="p-4 flex items-center justify-between gap-3 cursor-pointer select-none" onClick={() => setExpandedId(isExpanded ? null : item.id)}>
+                      <div 
+                        className="p-4 flex items-center justify-between gap-3 cursor-pointer select-none" 
+                        onClick={() => setExpandedId(isExpanded ? null : item.id)}
+                      >
                         <div className="flex items-center gap-3 flex-1 min-w-0">
                           {/* Checkbox */}
                           <button 
@@ -856,7 +885,7 @@ const Index = () => {
                           </button>
 
                           {/* Title & Episode Info */}
-                          <div className="min-w-0">
+                          <div className="min-w-0 flex-1">
                             <h4 className={`font-bold text-sm sm:text-base text-[#3e2723] truncate ${isCompleted ? 'line-through text-gray-600' : ''}`}>
                               {item.title}
                             </h4>
@@ -878,8 +907,21 @@ const Index = () => {
                           </div>
                         </div>
 
-                        {/* Recommendation Badge & Expand Arrow */}
+                        {/* Actions, Recommendation Badge & Expand Arrow */}
                         <div className="flex items-center gap-2">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleBookmark(item.id, item.title);
+                            }}
+                            className={`p-1.5 rounded hover:bg-[#dfcbb5] transition-colors ${
+                              isBookmarked ? 'text-amber-600' : 'text-[#8b5a2b]/50'
+                            }`}
+                            title={isBookmarked ? "Remove Bookmark" : "Bookmark Arc"}
+                          >
+                            <Bookmark size={16} className={isBookmarked ? 'fill-current' : ''} />
+                          </button>
+
                           <span className={`text-xs font-sans font-bold px-2.5 py-1 rounded-full ${
                             item.recommendation === 'Watch' ? 'bg-green-600 text-white' :
                             item.recommendation === 'Skip' ? 'bg-red-600 text-white' :
