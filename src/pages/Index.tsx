@@ -1,17 +1,14 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   Anchor, 
   BookOpen, 
   Compass, 
   Download, 
-  Filter, 
+  Upload,
   Search, 
-  CheckCircle, 
-  HelpCircle, 
   Award, 
-  MessageSquare, 
   ChevronDown, 
   ChevronUp, 
   Sparkles,
@@ -23,7 +20,9 @@ import {
   MapPin,
   RefreshCw,
   Bookmark,
-  Star
+  Edit3,
+  Save,
+  HardDrive
 } from 'lucide-react';
 import WantedPoster from '@/components/WantedPoster';
 import SailingMap from '@/components/SailingMap';
@@ -421,29 +420,30 @@ const guideData: GuideItem[] = [
 ];
 
 const Index = () => {
-  // State for user customization
-  const [pirateName, setPirateName] = useState<string>(() => {
-    return localStorage.getItem('pirateName') || 'Halex';
-  });
-  const [pirateLocation, setPirateLocation] = useState<string>(() => {
-    return localStorage.getItem('pirateLocation') || 'East Blue';
-  });
-  const [joinedDate, setJoinedDate] = useState<string>(() => {
-    return localStorage.getItem('joinedDate') || 'Aug 18, 2013';
-  });
-  const [pirateTitle, setPirateTitle] = useState<string>('Pirate Rookie');
+  // State for user customization with Local Storage initializers
+  const [pirateName, setPirateName] = useState<string>(() => localStorage.getItem('pirateName') || 'Halex');
+  const [pirateLocation, setPirateLocation] = useState<string>(() => localStorage.getItem('pirateLocation') || 'East Blue');
+  const [joinedDate, setJoinedDate] = useState<string>(() => localStorage.getItem('joinedDate') || 'Aug 18, 2013');
+  const [pirateTitle, setPirateTitle] = useState<string>(() => localStorage.getItem('pirateTitle') || 'Pirate Rookie');
+  const [pirateFruit, setPirateFruit] = useState<string>(() => localStorage.getItem('pirateFruit') || 'None Awakened');
 
-  // State for checklist & bookmarks
+  // State for checklist, bookmarks, & user notes
   const [completedIds, setCompletedIds] = useState<Set<string>>(() => {
     const saved = localStorage.getItem('completedArcs');
     return saved ? new Set(JSON.parse(saved)) : new Set();
   });
+  
   const [bookmarkedIds, setBookmarkedIds] = useState<Set<string>>(() => {
     const saved = localStorage.getItem('bookmarkedArcs');
     return saved ? new Set(JSON.parse(saved)) : new Set();
   });
 
-  // State for filters
+  const [customNotes, setCustomNotes] = useState<Record<string, string>>(() => {
+    const saved = localStorage.getItem('customArcNotes');
+    return saved ? JSON.parse(saved) : {};
+  });
+
+  // Filters state
   const [searchQuery, setSearchQuery] = useState('');
   const [typeFilter, setTypeFilter] = useState<string>('all');
   const [recFilter, setRecFilter] = useState<string>('all');
@@ -451,7 +451,9 @@ const Index = () => {
   const [bookmarksOnly, setBookmarksOnly] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
-  // Save state to localStorage
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Auto Save all state changes directly to Browser LocalStorage
   useEffect(() => {
     localStorage.setItem('completedArcs', JSON.stringify(Array.from(completedIds)));
   }, [completedIds]);
@@ -459,6 +461,10 @@ const Index = () => {
   useEffect(() => {
     localStorage.setItem('bookmarkedArcs', JSON.stringify(Array.from(bookmarkedIds)));
   }, [bookmarkedIds]);
+
+  useEffect(() => {
+    localStorage.setItem('customArcNotes', JSON.stringify(customNotes));
+  }, [customNotes]);
 
   useEffect(() => {
     localStorage.setItem('pirateName', pirateName);
@@ -472,56 +478,50 @@ const Index = () => {
     localStorage.setItem('joinedDate', joinedDate);
   }, [joinedDate]);
 
+  useEffect(() => {
+    localStorage.setItem('pirateTitle', pirateTitle);
+  }, [pirateTitle]);
+
+  useEffect(() => {
+    localStorage.setItem('pirateFruit', pirateFruit);
+  }, [pirateFruit]);
+
   // Calculate progress
   const totalItems = guideData.length;
   const completedCount = completedIds.size;
   const progressPercentage = totalItems > 0 ? (completedCount / totalItems) * 100 : 0;
 
-  // Determine current arc based on progress
   const getCurrentArc = () => {
     if (completedCount === 0) return "East Blue";
     if (completedCount === totalItems) return "Laugh Tale (Pirate King!)";
-    
     const nextItem = guideData.find(item => !completedIds.has(item.id));
     return nextItem ? nextItem.title : "Grand Line";
   };
 
-  // Toggle completion
   const toggleComplete = (id: string) => {
     const newCompleted = new Set(completedIds);
     if (newCompleted.has(id)) {
       newCompleted.delete(id);
-      setCompletedIds(newCompleted);
     } else {
       newCompleted.add(id);
-      setCompletedIds(newCompleted);
-      
       if (newCompleted.size === totalItems) {
-        confetti({
-          particleCount: 200,
-          spread: 100,
-          origin: { y: 0.6 }
-        });
-        showSuccess("CONGRATULATIONS! You have conquered the Grand Line and become the King of the Pirates!");
+        confetti({ particleCount: 200, spread: 100, origin: { y: 0.6 } });
+        showSuccess("CONGRATULATIONS! You have conquered the Grand Line!");
       } else if (newCompleted.size % 5 === 0) {
-        confetti({
-          particleCount: 60,
-          spread: 70,
-          origin: { y: 0.7 }
-        });
+        confetti({ particleCount: 60, spread: 70, origin: { y: 0.7 } });
         showSuccess(`Milestone reached! ${newCompleted.size} adventures completed!`);
       } else {
-        showSuccess("Adventure logged in your Pirate Journal!");
+        showSuccess("Adventure logged in browser storage!");
       }
     }
+    setCompletedIds(newCompleted);
   };
 
-  // Toggle bookmark
   const toggleBookmark = (id: string, title: string) => {
     const newBookmarks = new Set(bookmarkedIds);
     if (newBookmarks.has(id)) {
       newBookmarks.delete(id);
-      showSuccess(`Removed "${title}" from bookmarks.`);
+      showSuccess(`Removed "${title}" from favorites.`);
     } else {
       newBookmarks.add(id);
       showSuccess(`Bookmarked "${title}" as a favorite arc!`);
@@ -529,27 +529,73 @@ const Index = () => {
     setBookmarkedIds(newBookmarks);
   };
 
-  // Mark all as completed
-  const markAllCompleted = () => {
-    const allIds = guideData.map(item => item.id);
-    setCompletedIds(new Set(allIds));
-    confetti({
-      particleCount: 150,
-      spread: 80,
-      origin: { y: 0.6 }
-    });
-    showSuccess("All adventures marked as completed!");
+  const updateArcNote = (id: string, note: string) => {
+    setCustomNotes(prev => ({ ...prev, [id]: note }));
   };
 
-  // Reset progress
+  const markAllCompleted = () => {
+    setCompletedIds(new Set(guideData.map(item => item.id)));
+    confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
+    showSuccess("All adventures saved as completed!");
+  };
+
   const resetProgress = () => {
     if (window.confirm("Are you sure you want to reset your sailing progress?")) {
       setCompletedIds(new Set());
+      setBookmarkedIds(new Set());
+      setCustomNotes({});
       showSuccess("Progress reset back to the East Blue!");
     }
   };
 
-  // Filtered guide items
+  // Export JSON Backup
+  const exportBackupJSON = () => {
+    const backupData = {
+      pirateName,
+      pirateLocation,
+      joinedDate,
+      pirateTitle,
+      pirateFruit,
+      completedArcs: Array.from(completedIds),
+      bookmarkedArcs: Array.from(bookmarkedIds),
+      customArcNotes: customNotes
+    };
+
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData, null, 2));
+    const downloadAnchor = document.createElement('a');
+    downloadAnchor.setAttribute("href", dataStr);
+    downloadAnchor.setAttribute("download", `${pirateName}_GrandLine_Backup.json`);
+    document.body.appendChild(downloadAnchor);
+    downloadAnchor.click();
+    downloadAnchor.remove();
+    showSuccess("Backup JSON file exported!");
+  };
+
+  // Import JSON Backup
+  const handleImportJSON = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const fileReader = new FileReader();
+    if (e.target.files && e.target.files[0]) {
+      fileReader.readAsText(e.target.files[0], "UTF-8");
+      fileReader.onload = (event) => {
+        try {
+          const parsed = JSON.parse(event.target?.result as string);
+          if (parsed.pirateName) setPirateName(parsed.pirateName);
+          if (parsed.pirateLocation) setPirateLocation(parsed.pirateLocation);
+          if (parsed.joinedDate) setJoinedDate(parsed.joinedDate);
+          if (parsed.pirateTitle) setPirateTitle(parsed.pirateTitle);
+          if (parsed.pirateFruit) setPirateFruit(parsed.pirateFruit);
+          if (parsed.completedArcs) setCompletedIds(new Set(parsed.completedArcs));
+          if (parsed.bookmarkedArcs) setBookmarkedIds(new Set(parsed.bookmarkedArcs));
+          if (parsed.customArcNotes) setCustomNotes(parsed.customArcNotes);
+          
+          showSuccess("Logbook backup successfully loaded!");
+        } catch {
+          showError("Invalid backup file structure.");
+        }
+      };
+    }
+  };
+
   const filteredItems = guideData.filter(item => {
     const matchesSearch = item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                           item.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -562,12 +608,10 @@ const Index = () => {
     return matchesSearch && matchesType && matchesRec && matchesSaga && matchesBookmark;
   });
 
-  // Export to PDF
   const exportToPDF = async () => {
     const element = document.getElementById('pirate-logbook-content');
     if (!element) return;
-
-    showSuccess("Preparing your Pirate Logbook PDF...");
+    showSuccess("Generating Pirate Logbook PDF...");
 
     try {
       const canvas = await html2canvas(element, {
@@ -596,56 +640,83 @@ const Index = () => {
       }
 
       pdf.save(`${pirateName}_Pirate_Logbook.pdf`);
-      showSuccess("Pirate Logbook PDF downloaded successfully!");
-    } catch (error) {
-      console.error(error);
-      showError("Failed to generate PDF. Please try again.");
+      showSuccess("PDF logbook downloaded successfully!");
+    } catch {
+      showError("Failed to generate PDF.");
     }
   };
 
   return (
     <div className="min-h-screen bg-[#1e120c] bg-[radial-gradient(#2d1a12_1px,transparent_1px)] [background-size:24px_24px] text-[#3e2723] py-8 px-4 sm:px-6 lg:px-8 font-serif">
-      {/* Top Navigation / Header */}
+      {/* Hidden File Input for Backup Restore */}
+      <input 
+        type="file" 
+        ref={fileInputRef} 
+        onChange={handleImportJSON} 
+        accept=".json" 
+        className="hidden" 
+      />
+
+      {/* Top Header */}
       <header className="max-w-7xl mx-auto mb-8 flex flex-col md:flex-row items-center justify-between gap-4 border-b-4 border-double border-[#8b5a2b] pb-6">
         <div className="flex items-center gap-3">
           <div className="bg-[#8b5a2b] p-3 rounded-full text-[#f2e3c6] shadow-lg animate-pulse">
             <Skull size={32} />
           </div>
           <div>
-            <h1 className="text-3xl sm:text-4xl font-black tracking-wider text-[#f2e3c6] drop-shadow-md uppercase flex items-center gap-2">
-              Grand Line Logbook
-            </h1>
-            <p className="text-xs sm:text-sm text-[#dfcbb5] font-sans tracking-widest uppercase">
+            <div className="flex items-center gap-3">
+              <h1 className="text-3xl sm:text-4xl font-black tracking-wider text-[#f2e3c6] drop-shadow-md uppercase">
+                Grand Line Logbook
+              </h1>
+              {/* Auto-Saved Badge */}
+              <span className="bg-emerald-950 border border-emerald-500/50 text-emerald-300 text-[10px] font-sans font-bold px-2.5 py-1 rounded-full flex items-center gap-1.5 shadow-inner">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+                Auto-Saved in Browser
+              </span>
+            </div>
+            <p className="text-xs sm:text-sm text-[#dfcbb5] font-sans tracking-widest uppercase mt-1">
               The Ultimate One Piece Watching Guide & Arc Tracker
             </p>
           </div>
         </div>
 
-        {/* Quick Stats & Audio Toggle */}
-        <div className="flex flex-wrap items-center gap-3">
+        {/* Action Controls */}
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
           <OceanAmbience />
           <button 
-            onClick={exportToPDF}
-            className="flex items-center gap-2 bg-[#8b5a2b] hover:bg-[#a16e3f] text-[#f2e3c6] px-4 py-2 rounded-lg font-sans font-bold text-sm transition-all shadow-md hover:shadow-lg active:scale-95"
+            onClick={exportBackupJSON}
+            className="flex items-center gap-1.5 bg-[#5d4037] hover:bg-[#8b5a2b] text-[#f2e3c6] px-3 py-2 rounded-lg font-sans font-bold text-xs transition-all shadow-md active:scale-95"
+            title="Export your progress as a JSON file"
           >
-            <Download size={16} /> Export PDF
+            <HardDrive size={14} /> Backup
+          </button>
+          <button 
+            onClick={() => fileInputRef.current?.click()}
+            className="flex items-center gap-1.5 bg-[#5d4037] hover:bg-[#8b5a2b] text-[#f2e3c6] px-3 py-2 rounded-lg font-sans font-bold text-xs transition-all shadow-md active:scale-95"
+            title="Import progress from JSON file"
+          >
+            <Upload size={14} /> Restore
+          </button>
+          <button 
+            onClick={exportToPDF}
+            className="flex items-center gap-1.5 bg-[#8b5a2b] hover:bg-[#a16e3f] text-[#f2e3c6] px-3.5 py-2 rounded-lg font-sans font-bold text-xs transition-all shadow-md active:scale-95"
+          >
+            <Download size={14} /> Export PDF
           </button>
           <button 
             onClick={resetProgress}
-            className="flex items-center gap-2 bg-[#7f1d1d] hover:bg-red-800 text-white px-4 py-2 rounded-lg font-sans font-bold text-sm transition-all shadow-md hover:shadow-lg active:scale-95"
+            className="flex items-center gap-1.5 bg-[#7f1d1d] hover:bg-red-800 text-white px-3.5 py-2 rounded-lg font-sans font-bold text-xs transition-all shadow-md active:scale-95"
           >
-            <RefreshCw size={16} /> Reset
+            <RefreshCw size={14} /> Reset
           </button>
         </div>
       </header>
 
-      {/* Main Content Grid */}
+      {/* Main Content Layout */}
       <main className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8">
         
-        {/* Left Column: Pirate Profile & Tools (4 Cols) */}
+        {/* Left Sidebar */}
         <div className="lg:col-span-4 space-y-6">
-          
-          {/* Interactive Wanted Poster */}
           <div className="bg-[#2d1a12] p-4 rounded-2xl border-2 border-[#8b5a2b] shadow-xl">
             <h3 className="text-center text-[#dfcbb5] font-sans text-xs uppercase tracking-widest mb-3 flex items-center justify-center gap-1">
               <Flame size={14} className="text-red-500" /> Your Pirate Bounty <Flame size={14} className="text-red-500" />
@@ -659,14 +730,22 @@ const Index = () => {
             />
           </div>
 
-          {/* Devil Fruit Generator */}
-          <DevilFruitGenerator onAssignTitle={(title) => setPirateTitle(title)} />
+          <DevilFruitGenerator 
+            initialTitle={pirateTitle}
+            initialFruit={pirateFruit}
+            onAssignTitle={(title, fruit) => {
+              setPirateTitle(title);
+              setPirateFruit(fruit);
+            }} 
+          />
 
-          {/* Profile Customizer Card */}
           <div className="bg-[#f2e3c6] border-4 border-[#8b5a2b] rounded-xl p-5 shadow-xl">
-            <div className="flex items-center gap-2 mb-3 border-b-2 border-[#8b5a2b] pb-2">
-              <Anchor className="text-[#8b5a2b]" size={20} />
-              <h3 className="font-bold text-base text-[#3e2723]">Customize Pirate Log</h3>
+            <div className="flex items-center justify-between border-b-2 border-[#8b5a2b] pb-2 mb-3">
+              <div className="flex items-center gap-2">
+                <Anchor className="text-[#8b5a2b]" size={18} />
+                <h3 className="font-bold text-base text-[#3e2723]">Customize Pirate Identity</h3>
+              </div>
+              <span className="text-[10px] text-[#8b5a2b] font-mono font-bold">Auto-Saved</span>
             </div>
             
             <div className="space-y-3 font-sans text-xs">
@@ -708,52 +787,35 @@ const Index = () => {
             </div>
           </div>
 
-          {/* Watching Legend */}
           <div className="bg-[#f2e3c6] border-4 border-[#8b5a2b] rounded-xl p-5 shadow-xl">
             <div className="flex items-center gap-2 mb-3 border-b-2 border-[#8b5a2b] pb-2">
               <Info className="text-[#8b5a2b]" size={18} />
               <h3 className="font-bold text-base text-[#3e2723]">Guide Legend</h3>
             </div>
-            <div className="space-y-2.5 font-sans text-xs">
+            <div className="space-y-2 font-sans text-xs">
               <div className="flex items-center gap-2">
                 <span className="w-3 h-3 rounded-full bg-green-600 shrink-0" />
-                <div>
-                  <p className="font-bold text-[#3e2723]">Canon</p>
-                  <p className="text-gray-600 text-[11px]">Direct manga adaptation. Essential!</p>
-                </div>
+                <p className="font-bold text-[#3e2723]">Canon - Manga Adapted</p>
               </div>
               <div className="flex items-center gap-2">
                 <span className="w-3 h-3 rounded-full bg-red-600 shrink-0" />
-                <div>
-                  <p className="font-bold text-[#3e2723]">Filler</p>
-                  <p className="text-gray-600 text-[11px]">Anime-only story. Safe to skip.</p>
-                </div>
+                <p className="font-bold text-[#3e2723]">Filler - Safe to Skip</p>
               </div>
               <div className="flex items-center gap-2">
                 <span className="w-3 h-3 rounded-full bg-amber-500 shrink-0" />
-                <div>
-                  <p className="font-bold text-[#3e2723]">Optional / Special</p>
-                  <p className="text-gray-600 text-[11px]">Fun side content for fans.</p>
-                </div>
+                <p className="font-bold text-[#3e2723]">Optional / Movie / Special</p>
               </div>
             </div>
           </div>
-
         </div>
 
-        {/* Right Column: Navigation & Guide List (8 Cols) */}
+        {/* Right Main Column */}
         <div className="lg:col-span-8 space-y-6" id="pirate-logbook-content">
-          
-          {/* Sailing Map Progress */}
           <SailingMap progress={progressPercentage} currentArc={getCurrentArc()} />
 
-          {/* Interactive Guide Card */}
           <div className="bg-[#fdf8eb] border-4 border-[#8b5a2b] rounded-xl p-6 shadow-xl">
-            
-            {/* Search & Filter Controls */}
             <div className="space-y-4 mb-6 border-b-2 border-[#8b5a2b] pb-6">
               <div className="flex flex-col md:flex-row gap-3">
-                {/* Search Bar */}
                 <div className="relative flex-1">
                   <Search className="absolute left-3 top-3 text-[#8b5a2b]" size={18} />
                   <input 
@@ -769,9 +831,7 @@ const Index = () => {
                   <button 
                     onClick={() => setBookmarksOnly(!bookmarksOnly)}
                     className={`flex items-center gap-1.5 px-3 py-2 rounded-lg font-sans font-bold text-xs transition-all border-2 border-[#8b5a2b] ${
-                      bookmarksOnly 
-                        ? 'bg-[#8b5a2b] text-[#f2e3c6]' 
-                        : 'bg-[#f2e3c6] text-[#3e2723] hover:bg-[#dfcbb5]'
+                      bookmarksOnly ? 'bg-[#8b5a2b] text-[#f2e3c6]' : 'bg-[#f2e3c6] text-[#3e2723] hover:bg-[#dfcbb5]'
                     }`}
                   >
                     <Bookmark size={14} className={bookmarksOnly ? 'fill-current' : ''} />
@@ -787,7 +847,6 @@ const Index = () => {
                 </div>
               </div>
 
-              {/* Dropdown Filters */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 font-sans text-xs">
                 <div>
                   <label className="block font-bold text-[#5d4037] mb-1 uppercase">Type</label>
@@ -840,51 +899,44 @@ const Index = () => {
               </div>
             </div>
 
-            {/* Arcs List */}
+            {/* List of Arcs */}
             <div className="space-y-3">
               {filteredItems.length === 0 ? (
                 <div className="text-center py-12 text-[#8b5a2b]">
                   <Compass className="mx-auto w-12 h-12 mb-2 animate-spin" />
-                  <p className="font-bold">No adventures found matching your filters.</p>
-                  <p className="text-xs text-gray-600 mt-1">Try clearing filters or search terms.</p>
+                  <p className="font-bold">No adventures found matching filters.</p>
                 </div>
               ) : (
                 filteredItems.map((item) => {
                   const isCompleted = completedIds.has(item.id);
                   const isBookmarked = bookmarkedIds.has(item.id);
                   const isExpanded = expandedId === item.id;
+                  const currentNote = customNotes[item.id] || '';
 
                   return (
                     <div 
                       key={item.id}
                       className={`border-2 rounded-xl transition-all duration-300 overflow-hidden ${
-                        isCompleted 
-                          ? 'bg-[#e2d4be] border-[#8b5a2b]/40 opacity-85' 
-                          : 'bg-[#f2e3c6] border-[#8b5a2b] hover:shadow-md'
+                        isCompleted ? 'bg-[#e2d4be] border-[#8b5a2b]/40 opacity-85' : 'bg-[#f2e3c6] border-[#8b5a2b] hover:shadow-md'
                       }`}
                     >
-                      {/* Header Row */}
                       <div 
                         className="p-4 flex items-center justify-between gap-3 cursor-pointer select-none" 
                         onClick={() => setExpandedId(isExpanded ? null : item.id)}
                       >
                         <div className="flex items-center gap-3 flex-1 min-w-0">
-                          {/* Checkbox */}
                           <button 
                             onClick={(e) => {
                               e.stopPropagation();
                               toggleComplete(item.id);
                             }}
                             className={`w-6 h-6 rounded-full flex items-center justify-center border-2 transition-all ${
-                              isCompleted 
-                                ? 'bg-[#8b5a2b] border-[#3e2723] text-[#f2e3c6]' 
-                                : 'border-[#8b5a2b] hover:bg-[#dfcbb5]'
+                              isCompleted ? 'bg-[#8b5a2b] border-[#3e2723] text-[#f2e3c6]' : 'border-[#8b5a2b] hover:bg-[#dfcbb5]'
                             }`}
                           >
                             {isCompleted && <Check size={14} />}
                           </button>
 
-                          {/* Title & Episode Info */}
                           <div className="min-w-0 flex-1">
                             <h4 className={`font-bold text-sm sm:text-base text-[#3e2723] truncate ${isCompleted ? 'line-through text-gray-600' : ''}`}>
                               {item.title}
@@ -900,14 +952,15 @@ const Index = () => {
                               }`}>
                                 {item.type}
                               </span>
-                              <span className="text-[10px] font-sans text-gray-600 italic hidden sm:inline">
-                                {item.saga}
-                              </span>
+                              {currentNote && (
+                                <span className="text-[10px] font-sans font-bold bg-[#8b5a2b] text-[#f2e3c6] px-2 py-0.5 rounded flex items-center gap-1">
+                                  <Edit3 size={10} /> Note Added
+                                </span>
+                              )}
                             </div>
                           </div>
                         </div>
 
-                        {/* Actions, Recommendation Badge & Expand Arrow */}
                         <div className="flex items-center gap-2">
                           <button
                             onClick={(e) => {
@@ -917,7 +970,6 @@ const Index = () => {
                             className={`p-1.5 rounded hover:bg-[#dfcbb5] transition-colors ${
                               isBookmarked ? 'text-amber-600' : 'text-[#8b5a2b]/50'
                             }`}
-                            title={isBookmarked ? "Remove Bookmark" : "Bookmark Arc"}
                           >
                             <Bookmark size={16} className={isBookmarked ? 'fill-current' : ''} />
                           </button>
@@ -933,17 +985,23 @@ const Index = () => {
                         </div>
                       </div>
 
-                      {/* Expanded Details */}
                       {isExpanded && (
-                        <div className="px-4 pb-4 pt-2 border-t border-dashed border-[#8b5a2b]/40 bg-[#dfcbb5]/30 font-sans text-xs sm:text-sm text-[#5d4037] space-y-2">
-                          <p className="leading-relaxed">
-                            {item.description}
-                          </p>
-                          {item.notes && (
-                            <div className="bg-[#dfcbb5]/50 p-2 rounded border-l-4 border-[#8b5a2b] text-xs italic">
-                              <strong>Note:</strong> {item.notes}
-                            </div>
-                          )}
+                        <div className="px-4 pb-4 pt-2 border-t border-dashed border-[#8b5a2b]/40 bg-[#dfcbb5]/30 font-sans text-xs sm:text-sm text-[#5d4037] space-y-3">
+                          <p className="leading-relaxed">{item.description}</p>
+                          
+                          {/* Custom Personal Journal Notes */}
+                          <div className="mt-2 bg-[#f2e3c6] p-3 rounded-lg border border-[#8b5a2b]">
+                            <label className="block font-bold text-[11px] uppercase text-[#5d4037] mb-1 flex items-center gap-1">
+                              <Edit3 size={12} /> Personal Logbook Journal Note
+                            </label>
+                            <textarea
+                              value={currentNote}
+                              onChange={(e) => updateArcNote(item.id, e.target.value)}
+                              placeholder="Type your personal thoughts, favorite moment, or episode notes here... (Auto-Saved)"
+                              rows={2}
+                              className="w-full p-2 bg-[#dfcbb5] border border-[#8b5a2b] rounded text-xs text-[#3e2723] focus:outline-none focus:ring-1 focus:ring-[#8b5a2b] resize-none"
+                            />
+                          </div>
                         </div>
                       )}
                     </div>
@@ -953,9 +1011,7 @@ const Index = () => {
             </div>
 
           </div>
-
         </div>
-
       </main>
     </div>
   );

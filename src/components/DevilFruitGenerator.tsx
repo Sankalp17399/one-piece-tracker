@@ -1,9 +1,11 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Sparkles, Dices, Award } from 'lucide-react';
 
 interface DevilFruitGeneratorProps {
+  initialTitle?: string;
+  initialFruit?: string;
   onAssignTitle: (title: string, fruit: string) => void;
 }
 
@@ -32,9 +34,18 @@ const DEVIL_FRUITS = [
   "Uo Uo no Mi, Model: Seiryu (Azure Dragon)"
 ];
 
-const DevilFruitGenerator: React.FC<DevilFruitGeneratorProps> = ({ onAssignTitle }) => {
-  const [currentEpithet, setCurrentEpithet] = useState<string>("Pirate Rookie");
-  const [currentFruit, setCurrentFruit] = useState<string>("None Awakened");
+const DevilFruitGenerator: React.FC<DevilFruitGeneratorProps> = ({ 
+  initialTitle = "Pirate Rookie", 
+  initialFruit = "None Awakened",
+  onAssignTitle 
+}) => {
+  const [currentEpithet, setCurrentEpithet] = useState<string>(initialTitle);
+  const [currentFruit, setCurrentFruit] = useState<string>(initialFruit);
+
+  useEffect(() => {
+    if (initialTitle) setCurrentEpithet(initialTitle);
+    if (initialFruit) setCurrentFruit(initialFruit);
+  }, [initialTitle, initialFruit]);
 
   const rollTitle = () => {
     const randomEpithet = EPITHETS[Math.floor(Math.random() * EPITHETS.length)];
