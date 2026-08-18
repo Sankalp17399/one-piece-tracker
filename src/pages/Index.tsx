@@ -16,7 +16,9 @@ import {
   Compass,
   BookOpen,
   Scroll,
-  Smartphone
+  Smartphone,
+  Navigation,
+  Sparkles
 } from 'lucide-react';
 import WantedPoster from '@/components/WantedPoster';
 import SailingMap from '@/components/SailingMap';
@@ -86,6 +88,7 @@ const Index = () => {
   // Filters
   const [searchQuery, setSearchQuery] = useState('');
   const [typeFilter, setTypeFilter] = useState<'all' | 'canon' | 'filler' | 'skip-recommended'>('all');
+  const [selectedSaga, setSelectedSaga] = useState<string>('all');
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -108,6 +111,23 @@ const Index = () => {
   const unlockedAllies = getUnlockedAllies(currentEpisode);
   const activeShip = getActiveShip(currentEpisode);
   const currentBounty = getCurrentBounty(currentEpisode);
+
+  // Unique sagas for quick jumps
+  const allSagas = Array.from(new Set(CANON_EPISODE_GUIDE.map(item => item.saga)));
+
+  const scrollToCurrentArc = () => {
+    // If the active arc was filtered out by saga, reset saga filter to 'all'
+    if (selectedSaga !== 'all') {
+      setSelectedSaga('all');
+    }
+    setTimeout(() => {
+      const el = document.getElementById(`arc-card-${currentArcId}`);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        setExpandedId(currentArcId);
+      }
+    }, 50);
+  };
 
   const handleOnboardingComplete = (data: { name: string; location: string; title: string }) => {
     setPirateName(data.name);
@@ -208,7 +228,9 @@ const Index = () => {
     if (typeFilter === 'canon') matchesType = item.type === 'canon';
     if (typeFilter === 'filler') matchesType = item.type === 'filler';
     if (typeFilter === 'skip-recommended') matchesType = item.skipStatus === 'recommended-skip';
-    return matchesSearch && matchesType;
+    
+    const matchesSaga = selectedSaga === 'all' || item.saga === selectedSaga;
+    return matchesSearch && matchesType && matchesSaga;
   });
 
   return (
@@ -236,7 +258,10 @@ const Index = () => {
               Voyage
             </button>
             <button
-              onClick={() => setActiveTab('guide')}
+              onClick={() => {
+                setActiveTab('guide');
+                setTimeout(scrollToCurrentArc, 100);
+              }}
               className={`px-3.5 py-1.5 rounded-lg font-medium transition-all ${
                 activeTab === 'guide' ? 'bg-white/15 text-white shadow-sm' : 'text-white/50 hover:text-white'
               }`}
@@ -319,7 +344,10 @@ const Index = () => {
                   if (currentEpisode > 1) setCurrentEpisode(prev => prev - 1);
                 }}
                 onCompleteArc={() => toggleComplete(activeArc.id)}
-                onOpenLogbook={() => setActiveTab('guide')}
+                onOpenLogbook={() => {
+                  setActiveTab('guide');
+                  setTimeout(scrollToCurrentArc, 100);
+                }}
                 onOpenCrewRoster={() => setIsCrewRosterOpen(true)}
               />
 
@@ -335,13 +363,62 @@ const Index = () => {
         {/* TAB 2: LOGBOOK */}
         {activeTab === 'guide' && (
           <div className="space-y-4 animate-in fade-in duration-150">
+            
+            {/* Quick Jump to Active Arc Anchor Bar */}
+            <div className="bg-[#1c120c] border border-amber-500/30 rounded-2xl p-3 flex items-center justify-between gap-3 shadow-sm">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
+                <div className="min-w-0">
+                  <p className="text-[10px] uppercase font-semibold text-white/40 tracking-wider">Currently Watching</p>
+                  <p className="text-xs font-semibold text-white truncate">
+                    {activeArc.title} <span className="text-white/40 font-mono font-normal">({activeArc.episodes})</span>
+                  </p>
+                </div>
+              </div>
+
+              <button
+                onClick={scrollToCurrentArc}
+                className="shrink-0 bg-amber-500 hover:bg-amber-400 text-black px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all active:scale-95 shadow-sm"
+              >
+                <Navigation size={12} className="rotate-45" />
+                <span>Jump to Arc</span>
+              </button>
+            </div>
+
+            {/* Saga Jump Rail */}
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none text-xs">
+              <button
+                onClick={() => setSelectedSaga('all')}
+                className={`px-3 py-1.5 rounded-xl whitespace-nowrap transition-all ${
+                  selectedSaga === 'all'
+                    ? 'bg-white/20 text-white font-medium shadow-sm'
+                    : 'bg-white/5 text-white/40 hover:text-white'
+                }`}
+              >
+                All Sagas
+              </button>
+              {allSagas.map(saga => (
+                <button
+                  key={saga}
+                  onClick={() => setSelectedSaga(saga)}
+                  className={`px-3 py-1.5 rounded-xl whitespace-nowrap transition-all ${
+                    selectedSaga === saga
+                      ? 'bg-white/20 text-white font-medium shadow-sm'
+                      : 'bg-white/5 text-white/40 hover:text-white'
+                  }`}
+                >
+                  {saga}
+                </button>
+              ))}
+            </div>
+
             {/* Search & Minimal Filters */}
-            <div className="bg-[#1c120c] border border-white/10 rounded-2xl p-3.5 space-y-3">
+            <div className="bg-[#1c120c] border border-white/10 rounded-2xl p-3 space-y-2.5">
               <div className="relative">
                 <Search className="absolute left-3 top-2.5 text-white/30" size={14} />
                 <input 
                   type="text"
-                  placeholder="Search arc or episode..."
+                  placeholder="Search arc name or episode..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full pl-8 pr-3 py-1.5 bg-white/5 border border-white/10 rounded-xl text-xs text-white placeholder-white/30 focus:outline-none"
@@ -351,25 +428,25 @@ const Index = () => {
               <div className="flex items-center gap-1.5 text-xs">
                 <button
                   onClick={() => setTypeFilter('all')}
-                  className={`px-3 py-1 rounded-lg transition-colors ${typeFilter === 'all' ? 'bg-white/20 text-white' : 'text-white/40 hover:text-white'}`}
+                  className={`px-2.5 py-1 rounded-lg transition-colors ${typeFilter === 'all' ? 'bg-white/20 text-white font-medium' : 'text-white/40 hover:text-white'}`}
                 >
-                  All ({CANON_EPISODE_GUIDE.length})
+                  All ({filteredItems.length})
                 </button>
                 <button
                   onClick={() => setTypeFilter('canon')}
-                  className={`px-3 py-1 rounded-lg transition-colors ${typeFilter === 'canon' ? 'bg-white/20 text-white' : 'text-white/40 hover:text-white'}`}
+                  className={`px-2.5 py-1 rounded-lg transition-colors ${typeFilter === 'canon' ? 'bg-white/20 text-white font-medium' : 'text-white/40 hover:text-white'}`}
                 >
                   Canon
                 </button>
                 <button
                   onClick={() => setTypeFilter('filler')}
-                  className={`px-3 py-1 rounded-lg transition-colors ${typeFilter === 'filler' ? 'bg-white/20 text-white' : 'text-white/40 hover:text-white'}`}
+                  className={`px-2.5 py-1 rounded-lg transition-colors ${typeFilter === 'filler' ? 'bg-white/20 text-white font-medium' : 'text-white/40 hover:text-white'}`}
                 >
                   Filler
                 </button>
                 <button
                   onClick={() => setTypeFilter('skip-recommended')}
-                  className={`px-3 py-1 rounded-lg transition-colors ${typeFilter === 'skip-recommended' ? 'bg-rose-500/20 text-rose-300' : 'text-white/40 hover:text-white'}`}
+                  className={`px-2.5 py-1 rounded-lg transition-colors ${typeFilter === 'skip-recommended' ? 'bg-rose-500/20 text-rose-300 font-medium' : 'text-white/40 hover:text-white'}`}
                 >
                   Skips
                 </button>
@@ -386,10 +463,11 @@ const Index = () => {
 
                 return (
                   <div 
+                    id={`arc-card-${item.id}`}
                     key={item.id}
-                    className={`border rounded-xl transition-all overflow-hidden ${
+                    className={`border rounded-xl transition-all overflow-hidden scroll-mt-24 ${
                       isWatching 
-                        ? 'bg-[#241710] border-amber-500/50 shadow-sm'
+                        ? 'bg-[#241710] border-amber-500 ring-1 ring-amber-500/50 shadow-md'
                         : isCompleted 
                         ? 'bg-[#1c120c]/60 border-white/5 opacity-60'
                         : 'bg-[#1c120c] border-white/10 hover:border-white/20'
@@ -417,6 +495,11 @@ const Index = () => {
                             <h4 className={`text-xs font-semibold text-white truncate ${isCompleted ? 'line-through text-white/40' : ''}`}>
                               {item.title}
                             </h4>
+                            {isWatching && (
+                              <span className="text-[9px] font-bold bg-amber-500 text-black px-1.5 py-0.2 rounded uppercase">
+                                Active
+                              </span>
+                            )}
                             <span className="text-[10px] text-white/40 font-mono shrink-0">{item.episodes}</span>
                           </div>
                         </div>
