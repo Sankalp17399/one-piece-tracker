@@ -2,107 +2,104 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { 
-  Skull, 
   Smartphone, 
   Search, 
-  ChevronRight, 
   ChevronDown, 
   ChevronUp, 
   Check, 
   Edit3, 
-  Download, 
-  Upload, 
   Bookmark, 
   HardDrive, 
-  RefreshCw, 
+  Upload, 
+  Play,
+  RotateCcw,
   Sparkles,
-  Ship,
-  Compass,
-  Play
+  BookOpen
 } from 'lucide-react';
 import WantedPoster from '@/components/WantedPoster';
 import SailingMap from '@/components/SailingMap';
 import OceanAmbience from '@/components/OceanAmbience';
-import DevilFruitGenerator from '@/components/DevilFruitGenerator';
 import MobileBottomNav from '@/components/MobileBottomNav';
 import InstallPWAModal from '@/components/InstallPWAModal';
 import EditProfileModal from '@/components/EditProfileModal';
+import OnboardingModal from '@/components/OnboardingModal';
 import { showSuccess, showError } from '@/utils/toast';
 import confetti from 'canvas-confetti';
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
 
 interface GuideItem {
   id: string;
   title: string;
   episodes: string;
-  type: 'canon' | 'filler' | 'mixed' | 'movie' | 'special' | 'optional';
+  type: 'canon' | 'filler';
   description: string;
-  recommendation: 'Watch' | 'Skip' | 'Optional';
   saga: string;
 }
 
 const guideData: GuideItem[] = [
   // --- East Blue Saga ---
-  { id: "1", title: "Romance Dawn / Captain Morgan", episodes: "Ep 1-3", type: "canon", recommendation: "Watch", description: "Introduces Luffy & Zoro. Sets sail!", saga: "East Blue Saga" },
-  { id: "2", title: "Orange Town / Buggy Arc", episodes: "Ep 4-8", type: "canon", recommendation: "Watch", description: "Luffy meets Nami and fights Buggy.", saga: "East Blue Saga" },
-  { id: "3", title: "Syrup Village / Captain Kuro", episodes: "Ep 9-18", type: "canon", recommendation: "Watch", description: "Usopp joins and gets Going Merry.", saga: "East Blue Saga" },
-  { id: "4", title: "Baratie / Don Krieg", episodes: "Ep 19-30", type: "canon", recommendation: "Watch", description: "Sanji joins. Mihawk enters.", saga: "East Blue Saga" },
-  { id: "5", title: "Arlong Park / Nami's Arc", episodes: "Ep 31-44", type: "canon", recommendation: "Watch", description: "Emotional peak of East Blue.", saga: "East Blue Saga" },
-  { id: "6", title: "Loguetown Arc", episodes: "Ep 45, 48-53", type: "canon", recommendation: "Watch", description: "Town of beginning and end.", saga: "East Blue Saga" },
-  { id: "7", title: "Warship Island Filler", episodes: "Ep 54-61", type: "filler", recommendation: "Skip", description: "Calm Belt filler.", saga: "East Blue Saga" },
+  { id: "1", title: "Romance Dawn", episodes: "Ep 1-3", type: "canon", description: "Luffy sets sail and recruits swordsman Roronoa Zoro.", saga: "East Blue" },
+  { id: "2", title: "Orange Town", episodes: "Ep 4-8", type: "canon", description: "Encounter with the thief Nami and pirate Buggy the Clown.", saga: "East Blue" },
+  { id: "3", title: "Syrup Village", episodes: "Ep 9-18", type: "canon", description: "Usopp joins the crew; Going Merry is acquired.", saga: "East Blue" },
+  { id: "4", title: "Baratie Sea Restaurant", episodes: "Ep 19-30", type: "canon", description: "Cook Sanji joins; encounter with warlord Dracule Mihawk.", saga: "East Blue" },
+  { id: "5", title: "Arlong Park", episodes: "Ep 31-44", type: "canon", description: "Showdown at Arlong Park to free Nami and Cocoyasi Village.", saga: "East Blue" },
+  { id: "6", title: "Loguetown", episodes: "Ep 45, 48-53", type: "canon", description: "The town where the Pirate King Gol D. Roger was born and died.", saga: "East Blue" },
+  { id: "7", title: "Warship Island", episodes: "Ep 54-61", type: "filler", description: "Legendary dragon filler before entering the Calm Belt.", saga: "East Blue" },
 
   // --- Alabasta Saga ---
-  { id: "8", title: "Reverse Mountain / Laboon", episodes: "Ep 62-63", type: "canon", recommendation: "Watch", description: "Grand Line entry & Laboon.", saga: "Alabasta Saga" },
-  { id: "9", title: "Whisky Peak", episodes: "Ep 64-67", type: "canon", recommendation: "Watch", description: "Baroque Works & Princess Vivi.", saga: "Alabasta Saga" },
-  { id: "10", title: "Little Garden", episodes: "Ep 70-77", type: "canon", recommendation: "Watch", description: "Giants Dorry & Brogy.", saga: "Alabasta Saga" },
-  { id: "11", title: "Drum Island", episodes: "Ep 78-91", type: "canon", recommendation: "Watch", description: "Tony Tony Chopper joins!", saga: "Alabasta Saga" },
-  { id: "12", title: "Alabasta Arc", episodes: "Ep 92-130", type: "canon", recommendation: "Watch", description: "Showdown vs Crocodile.", saga: "Alabasta Saga" },
-  { id: "13", title: "Post-Alabasta Fillers", episodes: "Ep 131-143", type: "filler", recommendation: "Skip", description: "Pacing break filler.", saga: "Alabasta Saga" },
+  { id: "8", title: "Reverse Mountain & Laboon", episodes: "Ep 62-63", type: "canon", description: "Crossing the red line and meeting the whale Laboon.", saga: "Alabasta" },
+  { id: "9", title: "Whisky Peak", episodes: "Ep 64-67", type: "canon", description: "Baroque Works assassins and alliance with Princess Vivi.", saga: "Alabasta" },
+  { id: "10", title: "Little Garden", episodes: "Ep 70-77", type: "canon", description: "Prehistoric island duel between giants Dorry and Brogy.", saga: "Alabasta" },
+  { id: "11", title: "Drum Island", episodes: "Ep 78-91", type: "canon", description: "Winter island journey; doctor Tony Tony Chopper joins.", saga: "Alabasta" },
+  { id: "12", title: "Alabasta Kingdom", episodes: "Ep 92-130", type: "canon", description: "Civil war battle against warlord Sir Crocodile.", saga: "Alabasta" },
+  { id: "13", title: "Post-Alabasta Stories", episodes: "Ep 131-143", type: "filler", description: "Short crew episodic fillers.", saga: "Alabasta" },
 
   // --- Sky Island Saga ---
-  { id: "14", title: "Jaya / Mock Town", episodes: "Ep 144-152", type: "canon", recommendation: "Watch", description: "Blackbeard & Bellamy debut.", saga: "Sky Island Saga" },
-  { id: "15", title: "Skypiea Arc", episodes: "Ep 153-195", type: "canon", recommendation: "Watch", description: "Island in the clouds vs Enel.", saga: "Sky Island Saga" },
-  { id: "16", title: "G-8 Arc (Navarone)", episodes: "Ep 196-206", type: "filler", recommendation: "Watch", description: "Best filler arc in anime!", saga: "Sky Island Saga" },
+  { id: "14", title: "Jaya & Mock Town", episodes: "Ep 144-152", type: "canon", description: "First encounter with Blackbeard and Bellamy.", saga: "Sky Island" },
+  { id: "15", title: "Skypiea", episodes: "Ep 153-195", type: "canon", description: "The lost city of gold in the sea of clouds vs God Enel.", saga: "Sky Island" },
+  { id: "16", title: "G-8 Marine Base", episodes: "Ep 196-206", type: "filler", description: "Navarone marine base infiltration. High quality story.", saga: "Sky Island" },
 
   // --- Water 7 Saga ---
-  { id: "17", title: "Water 7 Arc", episodes: "Ep 227-263", type: "canon", recommendation: "Watch", description: "CP9 & crew emotional conflict.", saga: "Water 7 Saga" },
-  { id: "18", title: "Enies Lobby Arc", episodes: "Ep 264-312", type: "canon", recommendation: "Watch", description: "Robin rescue & Gear 2nd debut.", saga: "Water 7 Saga" },
-  { id: "19", title: "Post-Enies Lobby", episodes: "Ep 313-325", type: "canon", recommendation: "Watch", description: "Thousand Sunny & Ace vs Blackbeard.", saga: "Water 7 Saga" },
+  { id: "17", title: "Water 7", episodes: "Ep 227-263", type: "canon", description: "Shipwright city, CP9 conspiracy, and crew fallout.", saga: "Water 7" },
+  { id: "18", title: "Enies Lobby", episodes: "Ep 264-312", type: "canon", description: "Invasion of judicial island to save Nico Robin; Gear 2nd debut.", saga: "Water 7" },
+  { id: "19", title: "Post-Enies Lobby", episodes: "Ep 313-325", type: "canon", description: "Franky crafts Thousand Sunny; Ace confronts Blackbeard.", saga: "Water 7" },
 
   // --- Thriller Bark Saga ---
-  { id: "20", title: "Thriller Bark Arc", episodes: "Ep 337-381", type: "canon", recommendation: "Watch", description: "Brook joins & Kuma encounter.", saga: "Thriller Bark Saga" },
+  { id: "20", title: "Thriller Bark", episodes: "Ep 337-381", type: "canon", description: "Ghost ship island, warlord Gecko Moria, and Brook joins.", saga: "Thriller Bark" },
 
   // --- Summit War Saga ---
-  { id: "21", title: "Sabaody Archipelago", episodes: "Ep 385-405", type: "canon", recommendation: "Watch", description: "Supernovas & Celestial Dragons.", saga: "Summit War Saga" },
-  { id: "22", title: "Amazon Lily", episodes: "Ep 408-421", type: "canon", recommendation: "Watch", description: "Luffy meets Boa Hancock.", saga: "Summit War Saga" },
-  { id: "23", title: "Impel Down", episodes: "Ep 422-452", type: "canon", recommendation: "Watch", description: "Underwater prison break.", saga: "Summit War Saga" },
-  { id: "24", title: "Marineford (Summit War)", episodes: "Ep 457-489", type: "canon", recommendation: "Watch", description: "Pirate war at Marine HQ.", saga: "Summit War Saga" },
-  { id: "25", title: "Post-War & 3D2Y", episodes: "Ep 490-516", type: "canon", recommendation: "Watch", description: "Childhood flashback & training.", saga: "Summit War Saga" },
+  { id: "21", title: "Sabaody Archipelago", episodes: "Ep 385-405", type: "canon", description: "Celestial Dragons clash and the crew separation disaster.", saga: "Summit War" },
+  { id: "22", title: "Amazon Lily", episodes: "Ep 408-421", type: "canon", description: "Island of women ruled by warlord Boa Hancock.", saga: "Summit War" },
+  { id: "23", title: "Impel Down", episodes: "Ep 422-452", type: "canon", description: "Underwater great prison infiltration to save Portgas D. Ace.", saga: "Summit War" },
+  { id: "24", title: "Marineford", episodes: "Ep 457-489", type: "canon", description: "Whitebeard Pirates vs Marine HQ in the Paramount War.", saga: "Summit War" },
+  { id: "25", title: "Post-War & 3D2Y", episodes: "Ep 490-516", type: "canon", description: "Childhood brothers flashback and the 2-year training pledge.", saga: "Summit War" },
 
-  // --- Post-Timeskip Sagas ---
-  { id: "26", title: "Return to Sabaody", episodes: "Ep 517-522", type: "canon", recommendation: "Watch", description: "2-year reunion!", saga: "Fishman Island Saga" },
-  { id: "27", title: "Fishman Island", episodes: "Ep 523-574", type: "canon", recommendation: "Watch", description: "10,000 meters underwater.", saga: "Fishman Island Saga" },
-  { id: "28", title: "Punk Hazard", episodes: "Ep 579-625", type: "canon", recommendation: "Watch", description: "Law alliance & Caesar Clown.", saga: "Dressrosa Saga" },
-  { id: "29", title: "Dressrosa", episodes: "Ep 629-746", type: "canon", recommendation: "Watch", description: "Gear 4th vs Doflamingo.", saga: "Dressrosa Saga" },
-  { id: "30", title: "Zou Arc", episodes: "Ep 751-779", type: "canon", recommendation: "Watch", description: "Elephant island & Road Poneglyphs.", saga: "Whole Cake Island Saga" },
-  { id: "31", title: "Whole Cake Island", episodes: "Ep 783-877", type: "canon", recommendation: "Watch", description: "Big Mom & Katakuri fight.", saga: "Whole Cake Island Saga" },
-  { id: "32", title: "Reverie Arc", episodes: "Ep 878-889", type: "canon", recommendation: "Watch", description: "World leaders council.", saga: "Whole Cake Island Saga" },
-  { id: "33", title: "Wano Country Arc", episodes: "Ep 890-1085", type: "canon", recommendation: "Watch", description: "Samurai raid & Gear 5th!", saga: "Wano Country Saga" },
-  { id: "34", title: "Egghead Arc", episodes: "Ep 1086-Present", type: "canon", recommendation: "Watch", description: "Dr. Vegapunk & Final Saga.", saga: "Final Saga" }
+  // --- New World Sagas ---
+  { id: "26", title: "Return to Sabaody", episodes: "Ep 517-522", type: "canon", description: "The Straw Hats reunite stronger after 2 years.", saga: "Fishman Island" },
+  { id: "27", title: "Fishman Island", episodes: "Ep 523-574", type: "canon", description: "Voyage 10,000 meters beneath the sea to Ryugu Kingdom.", saga: "Fishman Island" },
+  { id: "28", title: "Punk Hazard", episodes: "Ep 579-625", type: "canon", description: "Alliance with Trafalgar Law and Caesar Clown's lab.", saga: "Dressrosa" },
+  { id: "29", title: "Dressrosa", episodes: "Ep 629-746", type: "canon", description: "Colosseum tournament & overthrowing Donquixote Doflamingo.", saga: "Dressrosa" },
+  { id: "30", title: "Zou Island", episodes: "Ep 751-779", type: "canon", description: "The back of the giant elephant Zunesha & Road Poneglyphs.", saga: "Whole Cake Island" },
+  { id: "31", title: "Whole Cake Island", episodes: "Ep 783-877", type: "canon", description: "Tea party infiltration vs Emperor Big Mom and Katakuri.", saga: "Whole Cake Island" },
+  { id: "32", title: "Levely / Reverie", episodes: "Ep 878-889", type: "canon", description: "World summit of monarchies and secrets of Mary Geoise.", saga: "Whole Cake Island" },
+  { id: "33", title: "Wano Country", episodes: "Ep 890-1085", type: "canon", description: "Samurai raid on Onigashima vs Emperor Kaido; Gear 5th awakens.", saga: "Wano Country" },
+  { id: "34", title: "Egghead Island", episodes: "Ep 1086-Present", type: "canon", description: "Future island of Dr. Vegapunk and truth of the Void Century.", saga: "Final Saga" }
 ];
 
 const Index = () => {
-  // Mobile app active tab state
   const [activeTab, setActiveTab] = useState<'dashboard' | 'guide' | 'profile'>('dashboard');
 
-  // Local storage state initialization
-  const [pirateName, setPirateName] = useState<string>(() => localStorage.getItem('pirateName') || 'Halex');
+  // First-time onboarding trigger check
+  const [isOnboardingOpen, setIsOnboardingOpen] = useState<boolean>(() => {
+    return !localStorage.getItem('hasCompletedOnboarding');
+  });
+
+  // Pirate profile identity
+  const [pirateName, setPirateName] = useState<string>(() => localStorage.getItem('pirateName') || 'Captain');
   const [pirateLocation, setPirateLocation] = useState<string>(() => localStorage.getItem('pirateLocation') || 'East Blue');
   const [joinedDate, setJoinedDate] = useState<string>(() => localStorage.getItem('joinedDate') || 'Aug 18, 2013');
-  const [pirateTitle, setPirateTitle] = useState<string>(() => localStorage.getItem('pirateTitle') || 'Pirate Rookie');
-  const [pirateFruit, setPirateFruit] = useState<string>(() => localStorage.getItem('pirateFruit') || 'None Awakened');
+  const [pirateTitle, setPirateTitle] = useState<string>(() => localStorage.getItem('pirateTitle') || 'Rookie Adventurer');
 
+  // Arc tracking state
   const [completedIds, setCompletedIds] = useState<Set<string>>(() => {
     const saved = localStorage.getItem('completedArcs');
     return saved ? new Set(JSON.parse(saved)) : new Set();
@@ -122,15 +119,15 @@ const Index = () => {
   const [isPWAModalOpen, setIsPWAModalOpen] = useState(false);
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
 
-  // Filters state
+  // Guide filtering
   const [searchQuery, setSearchQuery] = useState('');
-  const [typeFilter, setTypeFilter] = useState<string>('all');
+  const [typeFilter, setTypeFilter] = useState<'all' | 'canon' | 'filler'>('all');
   const [bookmarksOnly, setBookmarksOnly] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Auto-Save listeners
+  // Storage Persistence
   useEffect(() => localStorage.setItem('completedArcs', JSON.stringify(Array.from(completedIds))), [completedIds]);
   useEffect(() => localStorage.setItem('bookmarkedArcs', JSON.stringify(Array.from(bookmarkedIds))), [bookmarkedIds]);
   useEffect(() => localStorage.setItem('customArcNotes', JSON.stringify(customNotes)), [customNotes]);
@@ -138,39 +135,46 @@ const Index = () => {
   useEffect(() => localStorage.setItem('pirateLocation', pirateLocation), [pirateLocation]);
   useEffect(() => localStorage.setItem('joinedDate', joinedDate), [joinedDate]);
   useEffect(() => localStorage.setItem('pirateTitle', pirateTitle), [pirateTitle]);
-  useEffect(() => localStorage.setItem('pirateFruit', pirateFruit), [pirateFruit]);
 
   const totalItems = guideData.length;
   const completedCount = completedIds.size;
   const progressPercentage = totalItems > 0 ? (completedCount / totalItems) * 100 : 0;
-
   const nextArc = guideData.find(item => !completedIds.has(item.id)) || guideData[guideData.length - 1];
 
+  const handleOnboardingComplete = (data: { name: string; location: string; title: string }) => {
+    setPirateName(data.name);
+    setPirateLocation(data.location);
+    setPirateTitle(data.title);
+    localStorage.setItem('hasCompletedOnboarding', 'true');
+    setIsOnboardingOpen(false);
+    showSuccess(`Welcome aboard, ${data.name}!`);
+  };
+
   const toggleComplete = (id: string) => {
-    const newCompleted = new Set(completedIds);
-    if (newCompleted.has(id)) {
-      newCompleted.delete(id);
+    const nextSet = new Set(completedIds);
+    if (nextSet.has(id)) {
+      nextSet.delete(id);
     } else {
-      newCompleted.add(id);
-      if (newCompleted.size === totalItems) {
-        confetti({ particleCount: 200, spread: 100, origin: { y: 0.6 } });
-        showSuccess("You conquered the Grand Line!");
+      nextSet.add(id);
+      if (nextSet.size === totalItems) {
+        confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 } });
+        showSuccess("Grand Line fully mapped!");
       } else {
-        showSuccess("Adventure saved!");
+        showSuccess("Entry recorded in diary.");
       }
     }
-    setCompletedIds(newCompleted);
+    setCompletedIds(nextSet);
   };
 
   const toggleBookmark = (id: string) => {
-    const newBookmarks = new Set(bookmarkedIds);
-    if (newBookmarks.has(id)) {
-      newBookmarks.delete(id);
+    const nextSet = new Set(bookmarkedIds);
+    if (nextSet.has(id)) {
+      nextSet.delete(id);
     } else {
-      newBookmarks.add(id);
-      showSuccess("Bookmarked!");
+      nextSet.add(id);
+      showSuccess("Marked favorite");
     }
-    setBookmarkedIds(newBookmarks);
+    setBookmarkedIds(nextSet);
   };
 
   const updateArcNote = (id: string, note: string) => {
@@ -179,7 +183,10 @@ const Index = () => {
 
   const handleBackupExport = () => {
     const backupData = {
-      pirateName, pirateLocation, joinedDate, pirateTitle, pirateFruit,
+      pirateName,
+      pirateLocation,
+      joinedDate,
+      pirateTitle,
       completedArcs: Array.from(completedIds),
       bookmarkedArcs: Array.from(bookmarkedIds),
       customArcNotes: customNotes
@@ -187,9 +194,9 @@ const Index = () => {
     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData, null, 2));
     const a = document.createElement('a');
     a.href = dataStr;
-    a.download = `${pirateName}_GrandLine_Logbook.json`;
+    a.download = `${pirateName}_GrandLine_Diary.json`;
     a.click();
-    showSuccess("Backup JSON exported!");
+    showSuccess("Journal exported!");
   };
 
   const handleRestoreImport = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -203,11 +210,10 @@ const Index = () => {
           if (parsed.pirateLocation) setPirateLocation(parsed.pirateLocation);
           if (parsed.joinedDate) setJoinedDate(parsed.joinedDate);
           if (parsed.pirateTitle) setPirateTitle(parsed.pirateTitle);
-          if (parsed.pirateFruit) setPirateFruit(parsed.pirateFruit);
           if (parsed.completedArcs) setCompletedIds(new Set(parsed.completedArcs));
           if (parsed.bookmarkedArcs) setBookmarkedIds(new Set(parsed.bookmarkedArcs));
           if (parsed.customArcNotes) setCustomNotes(parsed.customArcNotes);
-          showSuccess("Logbook restored successfully!");
+          showSuccess("Logbook restored!");
         } catch {
           showError("Invalid backup file.");
         }
@@ -225,19 +231,19 @@ const Index = () => {
   });
 
   return (
-    <div className="min-h-screen bg-[#1e120c] text-[#3e2723] pb-24 font-serif select-none max-w-2xl mx-auto sm:border-x-2 border-[#8b5a2b]/30 shadow-2xl">
+    <div className="min-h-screen bg-[#160d08] text-[#2b1810] pb-24 font-serif select-none max-w-lg mx-auto sm:border-x border-[#8b5a2b]/20 shadow-2xl">
       <input type="file" ref={fileInputRef} onChange={handleRestoreImport} accept=".json" className="hidden" />
 
-      {/* App Mobile Top Bar */}
-      <header className="sticky top-0 z-30 bg-[#1e120c]/90 backdrop-blur-md px-4 py-3 border-b-2 border-[#8b5a2b] flex items-center justify-between text-[#f2e3c6]">
-        <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 bg-[#8b5a2b] rounded-xl flex items-center justify-center text-[#f2e3c6] shadow-md">
-            <Skull size={20} />
+      {/* Clean Minimal App Header */}
+      <header className="sticky top-0 z-30 bg-[#160d08]/95 backdrop-blur-md px-4 py-3 border-b border-[#8b5a2b]/20 flex items-center justify-between text-[#f5ebd7]">
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 bg-[#8b5a2b]/20 border border-[#8b5a2b]/40 rounded-xl flex items-center justify-center text-[#f5ebd7]">
+            <BookOpen size={16} />
           </div>
           <div>
-            <h1 className="font-black text-base tracking-wide uppercase leading-tight">Grand Line</h1>
-            <p className="text-[10px] text-[#dfcbb5] font-sans">
-              Logged as: <span className="font-bold text-[#f2e3c6]">{pirateName}</span>
+            <h1 className="font-bold text-sm tracking-wide uppercase">Grand Line Diary</h1>
+            <p className="text-[10px] text-[#9c8274] font-sans">
+              Capt. <span className="font-bold text-[#f5ebd7]">{pirateName}</span>
             </p>
           </div>
         </div>
@@ -246,129 +252,111 @@ const Index = () => {
           <OceanAmbience />
           <button 
             onClick={() => setIsPWAModalOpen(true)}
-            className="p-2 bg-[#8b5a2b] hover:bg-[#a16e3f] text-[#f2e3c6] rounded-xl text-xs font-sans font-bold flex items-center gap-1 shadow active:scale-95 transition-transform"
-            title="Install as Phone App"
+            className="p-2 bg-[#8b5a2b]/20 hover:bg-[#8b5a2b]/40 text-[#f5ebd7] rounded-xl text-xs font-sans font-semibold flex items-center gap-1 border border-[#8b5a2b]/30 active:scale-95 transition-all"
+            title="Install Mobile App"
           >
-            <Smartphone size={15} />
-            <span className="hidden sm:inline">Install App</span>
+            <Smartphone size={14} />
+            <span className="hidden sm:inline">Install</span>
           </button>
         </div>
       </header>
 
-      {/* Main Tab Views */}
-      <main className="p-4 sm:p-6 space-y-6">
+      {/* Main Container */}
+      <main className="p-4 space-y-5">
         
-        {/* DASHBOARD TAB */}
+        {/* TAB 1: VOYAGE DASHBOARD */}
         {activeTab === 'dashboard' && (
-          <div className="space-y-6 animate-in fade-in duration-200">
-            {/* Quick Profile Summary Banner */}
-            <div className="bg-[#f2e3c6] border-4 border-[#8b5a2b] rounded-3xl p-5 shadow-xl relative overflow-hidden">
-              <div className="flex items-center justify-between border-b-2 border-[#8b5a2b]/40 pb-3 mb-3">
-                <div className="flex items-center gap-2">
-                  <Sparkles size={18} className="text-[#8b5a2b]" />
-                  <span className="font-sans text-xs font-bold uppercase text-[#5d4037]">Pirate Dashboard</span>
-                </div>
+          <div className="space-y-5 animate-in fade-in duration-200">
+            {/* Identity Card */}
+            <div className="bg-[#f7f1e1] border-2 border-[#8b5a2b]/30 rounded-2xl p-4 shadow-sm relative overflow-hidden">
+              <div className="flex items-center justify-between border-b border-[#8b5a2b]/20 pb-2 mb-3">
+                <span className="text-[11px] font-sans font-bold uppercase tracking-wider text-[#6e4624]">
+                  Journal Cover
+                </span>
                 <button 
                   onClick={() => setIsEditProfileOpen(true)}
-                  className="bg-[#8b5a2b] text-[#f2e3c6] px-3 py-1 rounded-full text-xs font-sans font-bold flex items-center gap-1 active:scale-95 transition-transform"
+                  className="text-[11px] text-[#6e4624] hover:text-[#2b1810] font-sans font-bold flex items-center gap-1"
                 >
-                  <Edit3 size={12} /> Edit Profile
+                  <Edit3 size={11} /> Edit Name
                 </button>
               </div>
 
-              <div className="flex items-center gap-4">
-                <div className="w-16 h-16 bg-[#5d4037] text-[#f2e3c6] rounded-2xl flex items-center justify-center font-bold text-2xl border-2 border-[#8b5a2b] shadow-inner shrink-0">
-                  {pirateName[0]}
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-[#6e4624] text-[#f7f1e1] rounded-xl flex items-center justify-center font-bold text-xl border border-[#8b5a2b] shadow-inner shrink-0">
+                  {pirateName[0] || 'C'}
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold text-[#3e2723]">{pirateName}</h2>
-                  <p className="text-xs font-sans text-[#8b5a2b] font-bold mt-0.5">"{pirateTitle}"</p>
-                  <p className="text-[11px] font-sans text-[#5d4037] mt-0.5">Fruit: {pirateFruit}</p>
+                  <h2 className="text-lg font-bold text-[#2b1810] leading-tight">{pirateName}</h2>
+                  <p className="text-xs text-[#6e4624] italic">"{pirateTitle}"</p>
+                  <p className="text-[11px] font-sans text-[#8b5a2b] mt-0.5">Port: {pirateLocation}</p>
                 </div>
               </div>
             </div>
 
-            {/* Sailing Progress Bar Map */}
-            <SailingMap progress={progressPercentage} currentArc={nextArc.title} />
+            {/* Antique Route Map */}
+            <SailingMap progress={progressPercentage} currentArc={nextArc?.title || 'Unknown'} />
 
-            {/* Next Recommended Adventure Card */}
-            <div className="bg-[#f2e3c6] border-4 border-[#8b5a2b] rounded-3xl p-5 shadow-xl">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-sans font-bold uppercase text-[#8b5a2b] flex items-center gap-1.5">
-                  <Play size={14} /> Continue Watching Next
+            {/* Current Log Entry Card */}
+            <div className="bg-[#f7f1e1] border-2 border-[#8b5a2b]/30 rounded-2xl p-4 shadow-sm space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-sans font-bold uppercase text-[#6e4624] flex items-center gap-1">
+                  <Play size={12} className="fill-current" /> Next Port of Call
                 </span>
-                <span className="text-xs font-mono font-bold bg-[#dfcbb5] px-2 py-0.5 rounded text-[#3e2723]">
-                  {nextArc.episodes}
+                <span className="text-[10px] font-mono font-bold bg-[#ede2ca] px-2 py-0.5 rounded text-[#6e4624]">
+                  {nextArc?.episodes}
                 </span>
               </div>
 
-              <h3 className="font-bold text-lg text-[#3e2723] mb-1">{nextArc.title}</h3>
-              <p className="text-xs font-sans text-[#5d4037] mb-4">{nextArc.description}</p>
+              <h3 className="font-bold text-base text-[#2b1810]">{nextArc?.title}</h3>
+              <p className="text-xs text-[#6e4624] font-sans leading-relaxed">{nextArc?.description}</p>
 
               <button
-                onClick={() => toggleComplete(nextArc.id)}
-                className="w-full bg-[#8b5a2b] hover:bg-[#a16e3f] text-[#f2e3c6] font-sans font-bold py-3 rounded-2xl shadow-lg active:scale-95 transition-all flex items-center justify-center gap-2 text-sm"
+                onClick={() => nextArc && toggleComplete(nextArc.id)}
+                className="w-full mt-2 bg-[#6e4624] hover:bg-[#573519] text-[#f7f1e1] font-sans font-semibold py-2.5 rounded-xl shadow-md active:scale-98 transition-all flex items-center justify-center gap-1.5 text-xs uppercase tracking-wider"
               >
-                <Check size={16} /> Mark "{nextArc.title}" Completed
-              </button>
-            </div>
-
-            {/* Quick App Shortcut Banner for iOS/Android */}
-            <div className="bg-[#5d4037] text-[#f2e3c6] p-4 rounded-3xl border-2 border-[#8b5a2b] flex items-center justify-between shadow-lg">
-              <div className="flex items-center gap-3">
-                <Smartphone size={24} className="text-[#f2e3c6] shrink-0" />
-                <div>
-                  <h4 className="font-bold text-sm">Save to Phone Home Screen</h4>
-                  <p className="text-[11px] text-[#dfcbb5] font-sans">Use offline like a real app on iOS & Android</p>
-                </div>
-              </div>
-              <button 
-                onClick={() => setIsPWAModalOpen(true)}
-                className="bg-[#f2e3c6] text-[#3e2723] px-3 py-1.5 rounded-xl font-sans font-bold text-xs shrink-0 active:scale-95 transition-transform"
-              >
-                Install
+                <Check size={14} /> Record Completion
               </button>
             </div>
           </div>
         )}
 
-        {/* LOGBOOK / GUIDE TAB */}
+        {/* TAB 2: LOGBOOK */}
         {activeTab === 'guide' && (
-          <div className="space-y-4 animate-in fade-in duration-200">
-            {/* Search & Filter Header */}
-            <div className="space-y-3 bg-[#f2e3c6] p-4 rounded-3xl border-2 border-[#8b5a2b] shadow-md">
+          <div className="space-y-3 animate-in fade-in duration-200">
+            {/* Search & Filter Bar */}
+            <div className="bg-[#f7f1e1] p-3 rounded-2xl border border-[#8b5a2b]/30 shadow-sm space-y-2">
               <div className="relative">
-                <Search className="absolute left-3 top-3 text-[#8b5a2b]" size={16} />
+                <Search className="absolute left-3 top-2.5 text-[#8b5a2b]" size={14} />
                 <input 
                   type="text"
-                  placeholder="Search arc name, episodes..."
+                  placeholder="Search island, arc, episode..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2 bg-[#fdf8eb] border-2 border-[#8b5a2b] rounded-2xl text-xs font-sans font-bold text-[#3e2723] focus:outline-none"
+                  className="w-full pl-8 pr-3 py-1.5 bg-[#ede2ca] border border-[#8b5a2b]/30 rounded-xl text-xs font-sans text-[#2b1810] placeholder-[#8b5a2b]/60 focus:outline-none"
                 />
               </div>
 
-              <div className="flex items-center justify-between gap-2 font-sans text-xs">
+              <div className="flex items-center justify-between text-[11px] font-sans">
                 <button
                   onClick={() => setTypeFilter(typeFilter === 'all' ? 'canon' : typeFilter === 'canon' ? 'filler' : 'all')}
-                  className="bg-[#dfcbb5] px-3 py-1.5 rounded-xl font-bold text-[#3e2723] border border-[#8b5a2b]"
+                  className="bg-[#ede2ca] px-2.5 py-1 rounded-lg font-semibold text-[#6e4624] border border-[#8b5a2b]/20"
                 >
-                  Type: <span className="uppercase text-[#8b5a2b]">{typeFilter}</span>
+                  Type: <span className="uppercase font-bold">{typeFilter}</span>
                 </button>
 
                 <button
                   onClick={() => setBookmarksOnly(!bookmarksOnly)}
-                  className={`px-3 py-1.5 rounded-xl font-bold flex items-center gap-1 border border-[#8b5a2b] ${
-                    bookmarksOnly ? 'bg-[#8b5a2b] text-[#f2e3c6]' : 'bg-[#dfcbb5] text-[#3e2723]'
+                  className={`px-2.5 py-1 rounded-lg font-semibold flex items-center gap-1 border border-[#8b5a2b]/20 transition-colors ${
+                    bookmarksOnly ? 'bg-[#6e4624] text-[#f7f1e1]' : 'bg-[#ede2ca] text-[#6e4624]'
                   }`}
                 >
-                  <Bookmark size={12} className={bookmarksOnly ? 'fill-current' : ''} /> Favorites
+                  <Bookmark size={11} className={bookmarksOnly ? 'fill-current' : ''} /> Bookmarked
                 </button>
               </div>
             </div>
 
-            {/* List of Arcs */}
-            <div className="space-y-2.5">
+            {/* List of Entries */}
+            <div className="space-y-2">
               {filteredItems.map((item) => {
                 const isCompleted = completedIds.has(item.id);
                 const isBookmarked = bookmarkedIds.has(item.id);
@@ -378,71 +366,75 @@ const Index = () => {
                 return (
                   <div 
                     key={item.id}
-                    className={`border-2 rounded-2xl transition-all overflow-hidden ${
-                      isCompleted ? 'bg-[#e2d4be] border-[#8b5a2b]/40 opacity-80' : 'bg-[#f2e3c6] border-[#8b5a2b]'
+                    className={`border rounded-xl transition-all overflow-hidden ${
+                      isCompleted 
+                        ? 'bg-[#eae0cb] border-[#8b5a2b]/20 opacity-75' 
+                        : 'bg-[#f7f1e1] border-[#8b5a2b]/30 shadow-sm'
                     }`}
                   >
                     <div 
-                      className="p-3.5 flex items-center justify-between gap-3 cursor-pointer"
+                      className="p-3 flex items-center justify-between gap-2.5 cursor-pointer"
                       onClick={() => setExpandedId(isExpanded ? null : item.id)}
                     >
-                      <div className="flex items-center gap-3 min-w-0 flex-1">
+                      <div className="flex items-center gap-2.5 min-w-0 flex-1">
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
                             toggleComplete(item.id);
                           }}
-                          className={`w-6 h-6 rounded-full flex items-center justify-center border-2 shrink-0 ${
-                            isCompleted ? 'bg-[#8b5a2b] text-[#f2e3c6] border-[#3e2723]' : 'border-[#8b5a2b] bg-[#fdf8eb]'
+                          className={`w-5 h-5 rounded-md flex items-center justify-center border shrink-0 transition-colors ${
+                            isCompleted 
+                              ? 'bg-[#6e4624] text-[#f7f1e1] border-[#2b1810]' 
+                              : 'border-[#8b5a2b]/50 bg-[#ede2ca]'
                           }`}
                         >
-                          {isCompleted && <Check size={14} />}
+                          {isCompleted && <Check size={12} />}
                         </button>
 
                         <div className="min-w-0 flex-1">
-                          <h4 className={`font-bold text-sm text-[#3e2723] truncate ${isCompleted ? 'line-through text-gray-600' : ''}`}>
+                          <h4 className={`font-serif font-bold text-xs text-[#2b1810] truncate ${
+                            isCompleted ? 'line-through text-[#8b5a2b]' : ''
+                          }`}>
                             {item.title}
                           </h4>
-                          <div className="flex items-center gap-2 mt-0.5">
-                            <span className="text-[10px] font-mono bg-[#dfcbb5] px-1.5 py-0.2 rounded font-bold text-[#5d4037]">
+                          <div className="flex items-center gap-1.5 mt-0.5">
+                            <span className="text-[9px] font-mono text-[#6e4624] bg-[#ede2ca] px-1.5 py-0.2 rounded">
                               {item.episodes}
                             </span>
-                            <span className={`text-[9px] font-sans font-bold uppercase px-1.5 py-0.2 rounded ${
-                              item.type === 'canon' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                            }`}>
+                            <span className="text-[9px] font-sans text-[#8b5a2b]">
                               {item.type}
                             </span>
                           </div>
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1.5">
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
                             toggleBookmark(item.id);
                           }}
-                          className={`p-1 rounded ${isBookmarked ? 'text-amber-600' : 'text-[#8b5a2b]/40'}`}
+                          className={`p-1 rounded ${isBookmarked ? 'text-[#8b5a2b]' : 'text-[#8b5a2b]/30'}`}
                         >
-                          <Bookmark size={16} className={isBookmarked ? 'fill-current' : ''} />
+                          <Bookmark size={14} className={isBookmarked ? 'fill-current' : ''} />
                         </button>
-                        {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                        {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
                       </div>
                     </div>
 
                     {isExpanded && (
-                      <div className="p-3 border-t border-dashed border-[#8b5a2b]/40 bg-[#dfcbb5]/40 font-sans text-xs space-y-2">
-                        <p>{item.description}</p>
-                        <div className="bg-[#f2e3c6] p-2 rounded-xl border border-[#8b5a2b]">
-                          <label className="block text-[10px] font-bold uppercase text-[#5d4037] mb-1">
-                            Personal Note (Auto-Saved)
+                      <div className="p-3 border-t border-dashed border-[#8b5a2b]/30 bg-[#ede2ca]/60 font-sans text-xs space-y-2">
+                        <p className="text-[#6e4624] leading-relaxed">{item.description}</p>
+                        <div className="space-y-1">
+                          <label className="block text-[9px] font-bold uppercase tracking-wider text-[#8b5a2b]">
+                            Personal Journal Note
                           </label>
                           <textarea
                             value={currentNote}
                             onChange={(e) => updateArcNote(item.id, e.target.value)}
-                            placeholder="Add note..."
+                            placeholder="Inscribe a log note..."
                             rows={2}
-                            className="w-full p-2 bg-[#fdf8eb] border border-[#8b5a2b] rounded-lg text-xs"
+                            className="w-full p-2 bg-[#f7f1e1] border border-[#8b5a2b]/30 rounded-lg text-xs font-serif text-[#2b1810] focus:outline-none"
                           />
                         </div>
                       </div>
@@ -454,61 +446,64 @@ const Index = () => {
           </div>
         )}
 
-        {/* PROFILE & WANTED CARD TAB */}
+        {/* TAB 3: BOUNTY & POSTER */}
         {activeTab === 'profile' && (
-          <div className="space-y-6 animate-in fade-in duration-200">
-            {/* Wanted Poster Card */}
-            <div className="bg-[#2d1a12] p-4 rounded-3xl border-2 border-[#8b5a2b] shadow-xl">
-              <WantedPoster 
-                followers={completedCount} 
-                following={totalItems - completedCount} 
-                username={`${pirateName} ${pirateTitle !== 'Pirate Rookie' ? `"${pirateTitle}"` : ''}`} 
-                location={pirateLocation} 
-                joinedDate={joinedDate} 
-              />
-            </div>
-
-            {/* Devil Fruit Title Roll */}
-            <DevilFruitGenerator 
-              initialTitle={pirateTitle}
-              initialFruit={pirateFruit}
-              onAssignTitle={(title, fruit) => {
-                setPirateTitle(title);
-                setPirateFruit(fruit);
-              }}
+          <div className="space-y-5 animate-in fade-in duration-200">
+            <WantedPoster 
+              followers={completedCount} 
+              following={totalItems - completedCount} 
+              username={pirateName} 
+              location={pirateLocation} 
+              joinedDate={joinedDate} 
             />
 
-            {/* Backup & Restore Controls */}
-            <div className="bg-[#f2e3c6] border-4 border-[#8b5a2b] rounded-3xl p-5 shadow-xl font-sans text-xs space-y-3">
-              <h3 className="font-serif font-bold text-base text-[#3e2723] border-b border-[#8b5a2b]/30 pb-2">
-                Data & Logbook Backup
+            {/* Journal Data Backup Card */}
+            <div className="bg-[#f7f1e1] border-2 border-[#8b5a2b]/30 rounded-2xl p-4 shadow-sm font-sans space-y-3">
+              <h3 className="font-serif font-bold text-xs uppercase tracking-wider text-[#6e4624] border-b border-[#8b5a2b]/20 pb-1.5">
+                Diary Archive & Backup
               </h3>
               
               <div className="grid grid-cols-2 gap-2">
                 <button
                   onClick={handleBackupExport}
-                  className="bg-[#5d4037] hover:bg-[#8b5a2b] text-[#f2e3c6] font-bold py-2.5 rounded-xl flex items-center justify-center gap-1.5"
+                  className="bg-[#6e4624] hover:bg-[#573519] text-[#f7f1e1] font-semibold py-2 rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-sm active:scale-98 transition-all"
                 >
-                  <HardDrive size={14} /> Backup JSON
+                  <HardDrive size={13} /> Export JSON
                 </button>
                 <button
                   onClick={() => fileInputRef.current?.click()}
-                  className="bg-[#5d4037] hover:bg-[#8b5a2b] text-[#f2e3c6] font-bold py-2.5 rounded-xl flex items-center justify-center gap-1.5"
+                  className="bg-[#ede2ca] hover:bg-[#dfd0b5] text-[#2b1810] font-semibold py-2 rounded-xl text-xs flex items-center justify-center gap-1.5 border border-[#8b5a2b]/30 active:scale-98 transition-all"
                 >
-                  <Upload size={14} /> Restore
+                  <Upload size={13} /> Restore
                 </button>
               </div>
+
+              <button
+                onClick={() => setIsOnboardingOpen(true)}
+                className="w-full py-1.5 text-[11px] text-[#6e4624] hover:text-[#2b1810] flex items-center justify-center gap-1"
+              >
+                <RotateCcw size={11} /> Re-run Orientation Journey
+              </button>
             </div>
           </div>
         )}
 
       </main>
 
-      {/* Mobile App Navigation Bar */}
+      {/* Mobile App Navigation */}
       <MobileBottomNav activeTab={activeTab} setActiveTab={setActiveTab} />
 
-      {/* Modals */}
-      <InstallPWAModal isOpen={isPWAModalOpen} onClose={() => setIsPWAModalOpen(false)} />
+      {/* Modals & Dialogs */}
+      <OnboardingModal 
+        isOpen={isOnboardingOpen} 
+        onComplete={handleOnboardingComplete} 
+      />
+
+      <InstallPWAModal 
+        isOpen={isPWAModalOpen} 
+        onClose={() => setIsPWAModalOpen(false)} 
+      />
+
       <EditProfileModal 
         isOpen={isEditProfileOpen}
         onClose={() => setIsEditProfileOpen(false)}
@@ -519,7 +514,7 @@ const Index = () => {
           setPirateName(n);
           setPirateLocation(l);
           setJoinedDate(d);
-          showSuccess("Profile updated!");
+          showSuccess("Identity updated!");
         }}
       />
     </div>

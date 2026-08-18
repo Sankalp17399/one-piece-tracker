@@ -1,61 +1,107 @@
 "use client";
 
 import React from 'react';
-import { Compass, Ship, MapPin } from 'lucide-react';
+import { Compass, Navigation, MapPin } from 'lucide-react';
 
 interface SailingMapProps {
-  progress: number; // 0 to 100
+  progress: number;
   currentArc: string;
 }
 
 const SailingMap: React.FC<SailingMapProps> = ({ progress, currentArc }) => {
-  // Define key milestones along the Grand Line
   const milestones = [
-    { name: "East Blue", pos: 5 },
-    { name: "Alabasta", pos: 22 },
-    { name: "Skypiea", pos: 40 },
-    { name: "Water 7", pos: 55 },
-    { name: "Marineford", pos: 70 },
-    { name: "Wano", pos: 85 },
+    { name: "East Blue", pos: 8 },
+    { name: "Alabasta", pos: 25 },
+    { name: "Skypiea", pos: 42 },
+    { name: "Water 7", pos: 58 },
+    { name: "Marineford", pos: 72 },
+    { name: "Wano", pos: 88 },
     { name: "Egghead", pos: 98 }
   ];
 
   return (
-    <div className="relative w-full bg-[#f4eccf] border-4 border-[#8b5a2b] rounded-xl p-6 shadow-xl overflow-hidden select-none">
-      {/* Map Background Grid & Compass */}
-      <div className="absolute inset-0 opacity-5 pointer-events-none bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:16px_16px]" />
-      <Compass className="absolute right-4 top-4 text-[#8b5a2b] opacity-20 w-24 h-24 animate-[spin_20s_linear_infinite]" />
-
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+    <div className="relative w-full bg-[#f6f0de] border-2 border-[#8b5a2b]/40 rounded-2xl p-4 sm:p-5 shadow-md overflow-hidden select-none">
+      {/* Header */}
+      <div className="flex items-center justify-between border-b border-[#8b5a2b]/20 pb-2.5 mb-4">
         <div className="flex items-center gap-2">
-          <Ship className="text-[#8b5a2b] animate-bounce" />
-          <h3 className="font-serif text-xl font-bold text-[#3e2723]">Grand Line Navigation Map</h3>
+          <Compass className="text-[#6e4624]" size={16} />
+          <h3 className="font-serif text-sm font-bold text-[#2b1810] tracking-wide uppercase">
+            Grand Line Sea Chart
+          </h3>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="bg-[#8b5a2b] text-[#f4eccf] px-3 py-1 rounded-full text-xs font-bold font-mono">
-            Sailing Progress: {Math.round(progress)}%
-          </span>
-          {currentArc && (
-            <span className="bg-[#5d4037] text-[#f4eccf] px-3 py-1 rounded-full text-xs font-bold font-serif">
-              Current: {currentArc}
-            </span>
-          )}
+        <div className="text-[11px] font-mono font-bold text-[#6e4624] bg-[#ede2ca] px-2.5 py-0.5 rounded-full border border-[#8b5a2b]/20">
+          {Math.round(progress)}% Logged
         </div>
       </div>
 
-      {/* The Map Route Line */}
-      <div className="relative h-24 flex items-center mt-8 mb-4 overflow-x-auto scrollbar-none">
-        <div className="min-w-[600px] w-full relative h-full flex items-center">
-          {/* Dotted Sea Route */}
-          <div className="absolute left-0 right-0 h-1 border-t-4 border-dashed border-[#a1887f]" />
+      {/* Sea Route Progress Track */}
+      <div className="relative py-4 overflow-x-auto scrollbar-none">
+        <div className="min-w-[480px] sm:min-w-full relative h-12 flex items-center">
+          {/* Faint Dotted Sea Route */}
+          <div className="absolute left-2 right-2 h-0.5 border-t-2 border-dashed border-[#cbb399]" />
           
-          {/* Completed Route Highlight */}
+          {/* Inked Progress Line */}
           <div 
-            className="absolute left-0 h-1 bg-[#8b5a2b] transition-all duration-500"
+            className="absolute left-2 h-0.5 bg-[#6e4624] transition-all duration-700"
             style={{ width: `${progress}%` }}
           />
 
-          {/* Milestones */}
+          {/* Key Port Markers */}
+          {milestones.map((m, idx) => {
+            const isReached = progress >= m.pos;
+            return (
+              <div 
+                key={idx} 
+                className="absolute flex flex-col items-center -translate-x-1/<dyad-write path="src/components/SailingMap.tsx" description="Minimalist antique sea chart navigation map">
+"use client";
+
+import React from 'react';
+import { Compass, Navigation, MapPin } from 'lucide-react';
+
+interface SailingMapProps {
+  progress: number;
+  currentArc: string;
+}
+
+const SailingMap: React.FC<SailingMapProps> = ({ progress, currentArc }) => {
+  const milestones = [
+    { name: "East Blue", pos: 8 },
+    { name: "Alabasta", pos: 25 },
+    { name: "Skypiea", pos: 42 },
+    { name: "Water 7", pos: 58 },
+    { name: "Marineford", pos: 72 },
+    { name: "Wano", pos: 88 },
+    { name: "Egghead", pos: 98 }
+  ];
+
+  return (
+    <div className="relative w-full bg-[#f6f0de] border-2 border-[#8b5a2b]/40 rounded-2xl p-4 sm:p-5 shadow-md overflow-hidden select-none">
+      {/* Header */}
+      <div className="flex items-center justify-between border-b border-[#8b5a2b]/20 pb-2.5 mb-4">
+        <div className="flex items-center gap-2">
+          <Compass className="text-[#6e4624]" size={16} />
+          <h3 className="font-serif text-sm font-bold text-[#2b1810] tracking-wide uppercase">
+            Grand Line Sea Chart
+          </h3>
+        </div>
+        <div className="text-[11px] font-mono font-bold text-[#6e4624] bg-[#ede2ca] px-2.5 py-0.5 rounded-full border border-[#8b5a2b]/20">
+          {Math.round(progress)}% Logged
+        </div>
+      </div>
+
+      {/* Sea Route Progress Track */}
+      <div className="relative py-4 overflow-x-auto scrollbar-none">
+        <div className="min-w-[480px] sm:min-w-full relative h-12 flex items-center">
+          {/* Faint Dotted Sea Route */}
+          <div className="absolute left-2 right-2 h-0.5 border-t-2 border-dashed border-[#cbb399]" />
+          
+          {/* Inked Progress Line */}
+          <div 
+            className="absolute left-2 h-0.5 bg-[#6e4624] transition-all duration-700"
+            style={{ width: `${progress}%` }}
+          />
+
+          {/* Key Port Markers */}
           {milestones.map((m, idx) => {
             const isReached = progress >= m.pos;
             return (
@@ -64,15 +110,15 @@ const SailingMap: React.FC<SailingMapProps> = ({ progress, currentArc }) => {
                 className="absolute flex flex-col items-center -translate-x-1/2 transition-all duration-300"
                 style={{ left: `${m.pos}%` }}
               >
-                <div className={`w-6 h-6 rounded-full flex items-center justify-center border-2 transition-all duration-300 ${
+                <div className={`w-4 h-4 rounded-full flex items-center justify-center border transition-all ${
                   isReached 
-                    ? 'bg-[#8b5a2b] border-[#3e2723] text-[#f4eccf] scale-110 shadow-md' 
-                    : 'bg-[#dfcbb5] border-[#a1887f] text-[#8b5a2b]'
+                    ? 'bg-[#6e4624] border-[#2b1810] text-[#f6f0de] shadow-sm' 
+                    : 'bg-[#ede2ca] border-[#cbb399] text-[#8b5a2b]'
                 }`}>
-                  <MapPin size={12} />
+                  <div className={`w-1.5 h-1.5 rounded-full ${isReached ? 'bg-[#f6f0de]' : 'bg-[#a1887f]'}`} />
                 </div>
-                <span className={`text-[11px] font-serif font-bold mt-1 whitespace-nowrap ${
-                  isReached ? 'text-[#3e2723]' : 'text-[#8d6e63]'
+                <span className={`text-[10px] font-serif font-medium mt-1 whitespace-nowrap ${
+                  isReached ? 'text-[#2b1810] font-bold' : 'text-[#a1887f]'
                 }`}>
                   {m.name}
                 </span>
@@ -80,17 +126,23 @@ const SailingMap: React.FC<SailingMapProps> = ({ progress, currentArc }) => {
             );
           })}
 
-          {/* Animated Ship following progress */}
+          {/* Sloop marker */}
           <div 
-            className="absolute -translate-x-1/2 -translate-y-6 transition-all duration-500 ease-out"
-            style={{ left: `${progress}%` }}
+            className="absolute -translate-x-1/2 -translate-y-5 transition-all duration-700 ease-out"
+            style={{ left: `${Math.max(5, Math.min(95, progress))}%` }}
           >
-            <div className="bg-[#3e2723] text-[#f4eccf] p-2 rounded-full shadow-lg border-2 border-[#8b5a2b] animate-pulse">
-              <Ship size={20} className="text-[#f4eccf]" />
+            <div className="bg-[#2b1810] text-[#f6f0de] p-1.5 rounded-full shadow-md border border-[#8b5a2b]">
+              <Navigation size={12} className="rotate-45 fill-current" />
             </div>
           </div>
         </div>
       </div>
+      
+      {currentArc && (
+        <p className="text-[11px] font-serif text-[#6e4624] italic mt-1 text-center">
+          Current waters: <span className="font-bold text-[#2b1810] not-italic">{currentArc}</span>
+        </p>
+      )}
     </div>
   );
 };

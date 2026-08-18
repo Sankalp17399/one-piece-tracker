@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { Shield, Anchor, Calendar, MapPin, Users } from 'lucide-react';
+import { Anchor, MapPin, Calendar, Award } from 'lucide-react';
 
 interface WantedPosterProps {
   followers: number;
@@ -12,89 +12,70 @@ interface WantedPosterProps {
 }
 
 const WantedPoster: React.FC<WantedPosterProps> = ({
-  followers = 876,
-  following = 334,
-  username = "Halex",
-  location = "USA",
+  followers = 0,
+  following = 0,
+  username = "Captain",
+  location = "East Blue",
   joinedDate = "Aug 18, 2013"
 }) => {
-  // Calculate bounty based on followers
-  const bounty = (followers * 1000000).toLocaleString();
+  const bounty = (followers * 30000000).toLocaleString();
 
   return (
-    <div className="relative w-full max-w-sm mx-auto bg-[#f2e3c6] border-[12px] border-[#8b5a2b] rounded-lg p-6 shadow-2xl text-[#3e2723] font-serif overflow-hidden select-none transform hover:scale-105 transition-transform duration-300">
-      {/* Burnt/aged paper overlay effect */}
-      <div className="absolute inset-0 bg-radial-gradient pointer-events-none opacity-20 mix-blend-multiply" />
-      <div className="absolute -top-10 -left-10 w-24 h-24 bg-[#8b5a2b] rounded-full opacity-10 blur-xl" />
-      <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-[#3e2723] rounded-full opacity-15 blur-xl" />
+    <div className="relative w-full max-w-sm mx-auto bg-[#f5ebd7] border-4 border-[#6e4624] rounded-2xl p-5 shadow-2xl text-[#2b1810] font-serif select-none">
+      {/* Corner Rivets */}
+      <div className="absolute top-2 left-2 w-1.5 h-1.5 rounded-full bg-[#6e4624]" />
+      <div className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-[#6e4624]" />
+      <div className="absolute bottom-2 left-2 w-1.5 h-1.5 rounded-full bg-[#6e4624]" />
+      <div className="absolute bottom-2 right-2 w-1.5 h-1.5 rounded-full bg-[#6e4624]" />
 
       {/* Header */}
-      <div className="text-center mb-4">
-        <h2 className="text-4xl font-extrabold tracking-widest text-[#2d1a12] uppercase border-b-4 border-double border-[#5d4037] pb-1">
+      <div className="text-center mb-3">
+        <h2 className="text-3xl font-black tracking-widest text-[#2b1810] uppercase border-b-2 border-[#6e4624] pb-0.5">
           WANTED
         </h2>
-        <p className="text-xs uppercase tracking-widest font-sans font-bold text-[#5d4037] mt-1">
+        <p className="text-[9px] uppercase tracking-widest font-sans font-bold text-[#6e4624] mt-0.5">
           Dead or Alive
         </p>
       </div>
 
-      {/* Avatar Frame */}
-      <div className="relative bg-[#dfcbb5] border-4 border-[#5d4037] p-3 rounded shadow-inner mb-4">
-        <div className="aspect-square w-full bg-[#cbb399] rounded overflow-hidden relative flex items-center justify-center border-2 border-dashed border-[#8b5a2b]">
-          {/* Pirate Skull / Anchor Watermark */}
-          <Anchor className="absolute text-[#bfa385] w-32 h-32 opacity-30 animate-pulse" />
+      {/* Portrait box */}
+      <div className="relative bg-[#ebe0c7] border-2 border-[#6e4624] p-2 rounded-lg shadow-inner mb-3">
+        <div className="aspect-square w-full bg-[#dfd0b5] rounded flex flex-col items-center justify-center border border-dashed border-[#8b5a2b]/60 relative">
+          <Anchor className="absolute text-[#8b5a2b]/20 w-28 h-28" />
           
-          {/* Character Image Placeholder / Styled Avatar */}
-          <div className="relative z-10 text-center p-4">
-            <div className="w-24 h-24 mx-auto bg-[#5d4037] rounded-full flex items-center justify-center border-4 border-[#f2e3c6] shadow-lg mb-2">
-              <span className="text-3xl font-bold text-[#f2e3c6]">{username[0]}</span>
+          <div className="relative z-10 text-center">
+            <div className="w-16 h-16 mx-auto bg-[#6e4624] rounded-full flex items-center justify-center text-[#f5ebd7] text-2xl font-bold border-2 border-[#f5ebd7] shadow mb-1.5">
+              {username[0] || 'C'}
             </div>
-            <h3 className="text-xl font-bold text-[#3e2723]">{username}</h3>
-            <p className="text-xs text-[#5d4037] font-sans flex items-center justify-center gap-1 mt-1">
-              <MapPin size={12} /> {location}
+            <h3 className="text-base font-bold text-[#2b1810] max-w-[200px] truncate px-2">{username}</h3>
+            <p className="text-[11px] text-[#6e4624] font-sans flex items-center justify-center gap-1 mt-0.5">
+              <MapPin size={11} /> {location}
             </p>
           </div>
         </div>
-        
-        {/* Corner Rivets */}
-        <div className="absolute top-1 left-1 w-2 h-2 rounded-full bg-[#5d4037]" />
-        <div className="absolute top-1 right-1 w-2 h-2 rounded-full bg-[#5d4037]" />
-        <div className="absolute bottom-1 left-1 w-2 h-2 rounded-full bg-[#5d4037]" />
-        <div className="absolute bottom-1 right-1 w-2 h-2 rounded-full bg-[#5d4037]" />
       </div>
 
-      {/* Bounty & Stats */}
-      <div className="text-center space-y-2">
-        <p className="text-xs uppercase tracking-wider text-[#5d4037] font-sans font-semibold">
-          Bounty
-        </p>
-        <p className="text-3xl font-black tracking-wider text-[#7f1d1d] font-mono drop-shadow-sm">
+      {/* Bounty */}
+      <div className="text-center space-y-0.5 mb-3">
+        <p className="text-[10px] uppercase font-sans font-bold text-[#6e4624]">Bounty</p>
+        <p className="text-2xl font-black text-[#8b1e1e] font-mono tracking-wider">
           ฿ {bounty}-
         </p>
-        <p className="text-[10px] text-[#5d4037] italic">
-          MARINE HEADQUARTERS
-        </p>
+        <p className="text-[8px] text-[#6e4624] uppercase tracking-widest">Marine Headquarters</p>
       </div>
 
-      {/* Pirate Stats Footer */}
-      <div className="mt-6 pt-4 border-t border-dashed border-[#8b5a2b] grid grid-cols-2 gap-2 text-xs font-sans text-[#5d4037]">
-        <div className="flex items-center gap-1.5 bg-[#dfcbb5] p-1.5 rounded">
-          <Users size={14} className="text-[#8b5a2b]" />
-          <div>
-            <p className="font-bold text-[#3e2723]">{followers}</p>
-            <p className="text-[9px] uppercase">Crew Members</p>
-          </div>
+      {/* Footer stats */}
+      <div className="pt-2.5 border-t border-dashed border-[#8b5a2b]/50 grid grid-cols-2 gap-2 text-center text-xs font-sans">
+        <div className="bg-[#ebe0c7] p-1.5 rounded-lg border border-[#8b5a2b]/30">
+          <p className="font-bold text-[#2b1810] font-mono">{followers}</p>
+          <p className="text-[9px] uppercase text-[#6e4624]">Arcs Conquered</p>
         </div>
-        <div className="flex items-center gap-1.5 bg-[#dfcbb5] p-1.5 rounded">
-          <Anchor size={14} className="text-[#8b5a2b]" />
-          <div>
-            <p className="font-bold text-[#3e2723]">{following}</p>
-            <p className="text-[9px] uppercase">Allies</p>
-          </div>
+        <div className="bg-[#ebe0c7] p-1.5 rounded-lg border border-[#8b5a2b]/30">
+          <p className="font-bold text-[#2b1810] font-mono">{following}</p>
+          <p className="text-[9px] uppercase text-[#6e4624]">Uncharted Waters</p>
         </div>
-        <div className="col-span-2 flex items-center justify-center gap-1.5 bg-[#dfcbb5] p-1.5 rounded mt-1">
-          <Calendar size={14} className="text-[#8b5a2b]" />
-          <p className="text-[10px]">Sailing since: <span className="font-bold text-[#3e2723]">{joinedDate}</span></p>
+        <div className="col-span-2 text-[10px] text-[#6e4624] font-serif flex items-center justify-center gap-1 mt-0.5">
+          <Calendar size={11} /> Since {joinedDate}
         </div>
       </div>
     </div>
