@@ -1,24 +1,30 @@
 "use client";
 
 import React from 'react';
-import { Anchor, MapPin, Calendar, Award } from 'lucide-react';
+import { Anchor, MapPin, Calendar, Users, Award } from 'lucide-react';
+import { getCurrentBounty, getUnlockedCrew } from '@/data/onePieceProgression';
 
 interface WantedPosterProps {
-  followers: number;
-  following: number;
+  currentEpisode: number;
+  completedCount: number;
+  totalArcs: number;
   username: string;
   location: string;
   joinedDate: string;
+  onOpenCrewRoster: () => void;
 }
 
 const WantedPoster: React.FC<WantedPosterProps> = ({
-  followers = 0,
-  following = 0,
+  currentEpisode = 1,
+  completedCount = 0,
+  totalArcs = 34,
   username = "Captain",
   location = "East Blue",
-  joinedDate = "Aug 18, 2013"
+  joinedDate = "Aug 18, 2013",
+  onOpenCrewRoster
 }) => {
-  const bounty = (followers * 30000000).toLocaleString();
+  const currentBountyMilestone = getCurrentBounty(currentEpisode);
+  const unlockedCrew = getUnlockedCrew(currentEpisode);
 
   return (
     <div className="relative w-full max-w-sm mx-auto bg-[#f5ebd7] border-4 border-[#6e4624] rounded-2xl p-5 shadow-2xl text-[#2b1810] font-serif select-none">
@@ -57,25 +63,44 @@ const WantedPoster: React.FC<WantedPosterProps> = ({
 
       {/* Bounty */}
       <div className="text-center space-y-0.5 mb-3">
-        <p className="text-[10px] uppercase font-sans font-bold text-[#6e4624]">Bounty</p>
-        <p className="text-2xl font-black text-[#8b1e1e] font-mono tracking-wider">
-          ฿ {bounty}-
+        <p className="text-[10px] uppercase font-sans font-bold text-[#6e4624]">
+          Marine Bounty (Ep. {currentEpisode})
         </p>
-        <p className="text-[8px] text-[#6e4624] uppercase tracking-widest">Marine Headquarters</p>
+        <p className="text-2xl font-black text-[#8b1e1e] font-mono tracking-wider">
+          ฿ {currentBountyMilestone.formattedBounty}-
+        </p>
+        <p className="text-[8px] text-[#6e4624] uppercase tracking-widest">
+          {currentBountyMilestone.reason}
+        </p>
       </div>
+
+      {/* Quick Crew & Allies Banner */}
+      <button
+        onClick={onOpenCrewRoster}
+        className="w-full mb-3 bg-[#ede2ca] hover:bg-[#dfd0b5] border border-[#8b5a2b]/40 rounded-xl p-2.5 flex items-center justify-between text-xs transition-all shadow-sm"
+      >
+        <div className="flex items-center gap-2">
+          <Users size={15} className="text-[#6e4624]" />
+          <span className="font-bold text-[#2b1810]">Straw Hat Crew</span>
+        </div>
+        <div className="flex items-center gap-1 font-sans text-[11px] font-bold text-[#6e4624]">
+          <span>{unlockedCrew.length} Recruited</span>
+          <span className="text-xs">→</span>
+        </div>
+      </button>
 
       {/* Footer stats */}
       <div className="pt-2.5 border-t border-dashed border-[#8b5a2b]/50 grid grid-cols-2 gap-2 text-center text-xs font-sans">
         <div className="bg-[#ebe0c7] p-1.5 rounded-lg border border-[#8b5a2b]/30">
-          <p className="font-bold text-[#2b1810] font-mono">{followers}</p>
+          <p className="font-bold text-[#2b1810] font-mono">{completedCount}</p>
           <p className="text-[9px] uppercase text-[#6e4624]">Arcs Conquered</p>
         </div>
         <div className="bg-[#ebe0c7] p-1.5 rounded-lg border border-[#8b5a2b]/30">
-          <p className="font-bold text-[#2b1810] font-mono">{following}</p>
-          <p className="text-[9px] uppercase text-[#6e4624]">Uncharted Waters</p>
+          <p className="font-bold text-[#2b1810] font-mono">{totalArcs - completedCount}</p>
+          <p className="text-[9px] uppercase text-[#6e4624]">Remaining Ports</p>
         </div>
         <div className="col-span-2 text-[10px] text-[#6e4624] font-serif flex items-center justify-center gap-1 mt-0.5">
-          <Calendar size={11} /> Since {joinedDate}
+          <Calendar size={11} /> Sailing Since {joinedDate}
         </div>
       </div>
     </div>

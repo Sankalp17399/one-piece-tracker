@@ -1,9 +1,11 @@
 "use client";
 
 import React from 'react';
-import { Compass, Plus, Minus, Check, Play, Sparkles } from 'lucide-react';
+import { Compass, Plus, Minus, Check, Sparkles } from 'lucide-react';
+import { CANON_CREW_MEMBERS, CANON_ALLIES } from '@/data/onePieceProgression';
 
 interface CurrentlyWatchingCardProps {
+  arcId: string;
   arcTitle: string;
   arcEpisodes: string;
   arcDescription: string;
@@ -13,22 +15,29 @@ interface CurrentlyWatchingCardProps {
   onSetEpisode: (ep: number) => void;
   onCompleteArc: () => void;
   onOpenLogbook: () => void;
+  onOpenCrewRoster: () => void;
 }
 
 const CurrentlyWatchingCard: React.FC<CurrentlyWatchingCardProps> = ({
+  arcId,
   arcTitle,
   arcEpisodes,
   arcDescription,
   currentEpisode,
   onIncrementEpisode,
   onDecrementEpisode,
-  onSetEpisode,
+  onSetEpisode: _onSetEpisode,
   onCompleteArc,
-  onOpenLogbook
+  onOpenLogbook,
+  onOpenCrewRoster
 }) => {
+  // Find if any crew or ally is linked to this arc
+  const arcCrew = CANON_CREW_MEMBERS.filter(m => m.joinedArcId === arcId);
+  const arcAllies = CANON_ALLIES.filter(a => a.arcId === arcId);
+
   return (
-    <div className="bg-[#f7f1e1] border-2 border-[#8b5a2b]/40 rounded-2xl p-4 sm:p-5 shadow-sm space-y-3.5 relative overflow-hidden font-serif select-none">
-      {/* Decorative Stamp */}
+    <div className="bg-[#f7f1e1] border-2 border-[#8b5a2b]/40 rounded-2xl p-4 sm:p-5 shadow-sm space-y-3 relative overflow-hidden font-serif select-none">
+      {/* Header */}
       <div className="flex items-center justify-between border-b border-[#8b5a2b]/20 pb-2">
         <div className="flex items-center gap-1.5 text-[11px] font-sans font-bold uppercase tracking-wider text-[#6e4624]">
           <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse" />
@@ -46,6 +55,26 @@ const CurrentlyWatchingCard: React.FC<CurrentlyWatchingCardProps> = ({
           {arcDescription}
         </p>
       </div>
+
+      {/* Story Milestones for this arc if any */}
+      {(arcCrew.length > 0 || arcAllies.length > 0) && (
+        <div className="bg-[#ede2ca]/70 border border-[#8b5a2b]/30 rounded-xl p-2.5 flex items-center justify-between text-xs font-sans">
+          <div className="flex items-center gap-1.5 text-[#6e4624] min-w-0">
+            <Sparkles size={14} className="text-amber-700 shrink-0" />
+            <span className="font-medium text-[11px] truncate">
+              {arcCrew.length > 0 
+                ? `Recruits: ${arcCrew.map(c => c.name).join(", ")}` 
+                : `Allies: ${arcAllies.map(a => a.name).join(", ")}`}
+            </span>
+          </div>
+          <button
+            onClick={onOpenCrewRoster}
+            className="text-[10px] font-bold text-[#2b1810] underline whitespace-nowrap ml-2 shrink-0"
+          >
+            View Roster
+          </button>
+        </div>
+      )}
 
       {/* Episode Log Stepper */}
       <div className="bg-[#ede2ca] border border-[#8b5a2b]/30 rounded-xl p-3 flex items-center justify-between">

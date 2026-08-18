@@ -14,8 +14,9 @@ import {
   Play,
   RotateCcw,
   BookOpen,
-  Compass,
-  Radio
+  Users,
+  Sparkles,
+  Award
 } from 'lucide-react';
 import WantedPoster from '@/components/WantedPoster';
 import SailingMap from '@/components/SailingMap';
@@ -25,6 +26,8 @@ import InstallPWAModal from '@/components/InstallPWAModal';
 import EditProfileModal from '@/components/EditProfileModal';
 import OnboardingModal from '@/components/OnboardingModal';
 import CurrentlyWatchingCard from '@/components/CurrentlyWatchingCard';
+import CrewAndAlliesModal from '@/components/CrewAndAlliesModal';
+import { getCurrentBounty, getUnlockedCrew, getUnlockedAllies, getActiveShip } from '@/data/onePieceProgression';
 import { showSuccess, showError } from '@/utils/toast';
 import confetti from 'canvas-confetti';
 
@@ -131,6 +134,7 @@ const Index = () => {
   // UI Modals
   const [isPWAModalOpen, setIsPWAModalOpen] = useState(false);
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
+  const [isCrewRosterOpen, setIsCrewRosterOpen] = useState(false);
 
   // Guide filtering
   const [searchQuery, setSearchQuery] = useState('');
@@ -157,6 +161,10 @@ const Index = () => {
   
   // Find current watching arc item
   const activeArc = guideData.find(item => item.id === currentArcId) || guideData[0];
+  const unlockedCrew = getUnlockedCrew(currentEpisode);
+  const unlockedAllies = getUnlockedAllies(currentEpisode);
+  const activeShip = getActiveShip(currentEpisode);
+  const currentBounty = getCurrentBounty(currentEpisode);
 
   const handleOnboardingComplete = (data: { name: string; location: string; title: string }) => {
     setPirateName(data.name);
@@ -170,7 +178,7 @@ const Index = () => {
   const setWatchingArc = (arc: GuideItem) => {
     setCurrentArcId(arc.id);
     setCurrentEpisode(arc.startEp);
-    showSuccess(`Now watching: ${arc.title}`);
+    showSuccess(`Now sailing: ${arc.title}`);
   };
 
   const toggleComplete = (id: string) => {
@@ -299,7 +307,7 @@ const Index = () => {
         
         {/* TAB 1: VOYAGE DASHBOARD */}
         {activeTab === 'dashboard' && (
-          <div className="space-y-5 animate-in fade-in duration-200">
+          <div className="space-y-4 animate-in fade-in duration-200">
             {/* Identity Card */}
             <div className="bg-[#f7f1e1] border-2 border-[#8b5a2b]/30 rounded-2xl p-4 shadow-sm relative overflow-hidden">
               <div className="flex items-center justify-between border-b border-[#8b5a2b]/20 pb-2 mb-3">
@@ -318,16 +326,21 @@ const Index = () => {
                 <div className="w-12 h-12 bg-[#6e4624] text-[#f7f1e1] rounded-xl flex items-center justify-center font-bold text-xl border border-[#8b5a2b] shadow-inner shrink-0">
                   {pirateName[0] || 'C'}
                 </div>
-                <div>
-                  <h2 className="text-lg font-bold text-[#2b1810] leading-tight">{pirateName}</h2>
-                  <p className="text-xs text-[#6e4624] italic">"{pirateTitle}"</p>
+                <div className="min-w-0 flex-1">
+                  <h2 className="text-lg font-bold text-[#2b1810] leading-tight truncate">{pirateName}</h2>
+                  <p className="text-xs text-[#6e4624] italic truncate">"{pirateTitle}"</p>
                   <p className="text-[11px] font-sans text-[#8b5a2b] mt-0.5">Port: {pirateLocation}</p>
+                </div>
+                <div className="text-right shrink-0">
+                  <p className="text-[9px] font-sans font-bold uppercase text-[#8b5a2b]">Bounty</p>
+                  <p className="text-xs font-mono font-bold text-[#8b1e1e]">฿ {currentBounty.formattedBounty}</p>
                 </div>
               </div>
             </div>
 
             {/* Currently Watching Stage Card */}
             <CurrentlyWatchingCard
+              arcId={activeArc.id}
               arcTitle={activeArc.title}
               arcEpisodes={activeArc.episodes}
               arcDescription={activeArc.description}
@@ -344,7 +357,31 @@ const Index = () => {
               onSetEpisode={(ep) => setCurrentEpisode(ep)}
               onCompleteArc={() => toggleComplete(activeArc.id)}
               onOpenLogbook={() => setActiveTab('guide')}
+              onOpenCrewRoster={() => setIsCrewRosterOpen(true)}
             />
+
+            {/* Crew & Fleet Quick Summary Bar */}
+            <div className="bg-[#f7f1e1] border-2 border-[#8b5a2b]/30 rounded-2xl p-3.5 shadow-sm flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-[#ede2ca] border border-[#8b5a2b]/40 flex items-center justify-center text-lg">
+                  🏴‍☠️
+                </div>
+                <div>
+                  <h4 className="font-bold text-xs text-[#2b1810]">Active Ship & Fleet</h4>
+                  <p className="text-[11px] font-sans text-[#6e4624]">
+                    {activeShip.name} • {unlockedCrew.length} Crew • {unlockedAllies.length} Allies
+                  </p>
+                </div>
+              </div>
+
+              <button
+                onClick={() => setIsCrewRosterOpen(true)}
+                className="bg-[#6e4624] hover:bg-[#573519] text-[#f7f1e1] font-sans font-bold text-xs px-3 py-1.5 rounded-xl shadow transition-all active:scale-95 flex items-center gap-1"
+              >
+                <Users size={13} />
+                <span>Roster</span>
+              </button>
+            </div>
 
             {/* Antique Route Map */}
             <SailingMap progress={progressPercentage} currentArc={activeArc?.title || 'East Blue'} />
@@ -512,14 +549,48 @@ const Index = () => {
 
         {/* TAB 3: BOUNTY & POSTER */}
         {activeTab === 'profile' && (
-          <div className="space-y-5 animate-in fade-in duration-200">
+          <div className="space-y-4 animate-in fade-in duration-200">
             <WantedPoster 
-              followers={completedCount} 
-              following={totalItems - completedCount} 
+              currentEpisode={currentEpisode}
+              completedCount={completedCount} 
+              totalArcs={totalItems}
               username={pirateName} 
               location={pirateLocation} 
               joinedDate={joinedDate} 
+              onOpenCrewRoster={() => setIsCrewRosterOpen(true)}
             />
+
+            {/* Quick Crew & Fleet Access Card */}
+            <div className="bg-[#f7f1e1] border-2 border-[#8b5a2b]/30 rounded-2xl p-4 shadow-sm font-sans space-y-2.5">
+              <div className="flex items-center justify-between border-b border-[#8b5a2b]/20 pb-2">
+                <span className="font-serif font-bold text-xs uppercase tracking-wider text-[#6e4624] flex items-center gap-1.5">
+                  <Users size={14} /> Crew, Allies & Flagships
+                </span>
+                <span className="text-[10px] font-mono text-[#8b5a2b]">
+                  {unlockedCrew.length}/10 Nakama
+                </span>
+              </div>
+
+              <div className="flex items-center gap-1.5 overflow-x-auto py-1 scrollbar-none">
+                {unlockedCrew.map(member => (
+                  <div 
+                    key={member.id}
+                    onClick={() => setIsCrewRosterOpen(true)}
+                    className="w-9 h-9 rounded-xl bg-[#ede2ca] border border-[#8b5a2b]/40 flex items-center justify-center text-base shrink-0 cursor-pointer shadow-sm active:scale-95 transition-all"
+                    title={`${member.name} (${member.role})`}
+                  >
+                    {member.avatarIcon}
+                  </div>
+                ))}
+              </div>
+
+              <button
+                onClick={() => setIsCrewRosterOpen(true)}
+                className="w-full bg-[#ede2ca] hover:bg-[#dfd0b5] text-[#2b1810] font-semibold py-2 rounded-xl text-xs flex items-center justify-center gap-1.5 border border-[#8b5a2b]/30 active:scale-98 transition-all"
+              >
+                <Users size={13} /> View Complete Crew Roster & Allies
+              </button>
+            </div>
 
             {/* Journal Data Backup Card */}
             <div className="bg-[#f7f1e1] border-2 border-[#8b5a2b]/30 rounded-2xl p-4 shadow-sm font-sans space-y-3">
@@ -558,6 +629,13 @@ const Index = () => {
       <MobileBottomNav activeTab={activeTab} setActiveTab={setActiveTab} />
 
       {/* Modals & Dialogs */}
+      <CrewAndAlliesModal
+        isOpen={isCrewRosterOpen}
+        onClose={() => setIsCrewRosterOpen(false)}
+        currentEpisode={currentEpisode}
+        captainName={pirateName}
+      />
+
       <OnboardingModal 
         isOpen={isOnboardingOpen} 
         onComplete={handleOnboardingComplete} 
