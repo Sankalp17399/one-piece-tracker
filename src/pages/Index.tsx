@@ -69,6 +69,9 @@ const Index = () => {
   const [typeFilter, setTypeFilter] = useState<'all' | 'canon' | 'filler' | 'skip-recommended'>('all');
   const [selectedSaga, setSelectedSaga] = useState<string>('all');
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [isPWAModalOpen, setIsPWAModalOpen] = useState(false);
+  const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
+  const [isCrewRosterOpen, setIsCrewRosterOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Persistence
@@ -120,23 +123,25 @@ const Index = () => {
 
   const toggleComplete = (id: string) => {
     setCompletedIds(prev => {
-      const next = [...prev];
-      if (next.includes(id)) {
-        return next.filter(i => i !== id);
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
       } else {
-        return [...next, id];
+        next.add(id);
       }
+      return next;
     });
   };
 
   const toggleBookmark = (id: string) => {
     setBookmarkedIds(prev => {
-      const next = [...prev];
-      if (next.includes(id)) {
-        return next.filter(i => i !== id);
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
       } else {
-        return [...next, id];
+        next.add(id);
       }
+      return next;
     });
   };
 
@@ -196,9 +201,29 @@ const Index = () => {
     return matchesSearch && matchesType && matchesSaga;
   });
 
+  // Helper function for saga button classes
+  const getSagaButtonClass = (isSelected: boolean) => {
+    if (isSelected) {
+      return 'px-3 py-1.5 rounded-xl whitespace-nowrap font-bold transition-all border bg-[#8b5a2b] text-[#f7eedc] border-[#8b5a2b] shadow-sm';
+    }
+    return 'px-3 py-1.5 rounded-xl whitespace-nowrap font-bold transition-all border bg-[#f3e5c8] text-[#341d10] border-[#9c6a3b]/60 hover:bg-[#e8d5b3]';
+  };
+
+  // Helper function for filter button classes
+  const getFilterButtonClass = (isActive: boolean, isSpecial?: boolean) => {
+    if (isActive) {
+      if (isSpecial) {
+        return 'px-3 py-1 rounded-lg transition-colors border bg-[#8c1d18] text-white border-[#8c1d18]';
+      }
+      return 'px-3 py-1 rounded-lg transition-colors border bg-[#8b5a2b] text-[#f7eedc] border-[#8b5a2b]';
+    }
+    return 'px-3 py-1 rounded-lg transition-colors border bg-[#dfcaa5] text-[#341d10] border-[#8b5a2b]/40 hover:bg-[#d5bc93]';
+  };
+
   return (
     <div className="min-h-screen bg-[#180e09] text-[#f4e6cc] font-serif select-none pb-24 md:pb-12 bg-[radial-gradient(#8b5a2b_0.75px,transparent_0.75px)] [background-size:16px_16px]">
       <input type="file" ref={fileInputRef} onChange={handleRestoreImport} accept=".json" className="hidden" />
+      
       <header className="sticky top-0 z-30 bg-[#25150c]/95 backdrop-blur-xl border-b-2 border-[#8b5a2b]/40 px-4 sm:px-8 py-3.5 shadow-lg">
         <div className="max-w-5xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -210,11 +235,9 @@ const Index = () => {
           <div className="hidden md:flex items-center bg-[#150c07] p-1 rounded-xl border border-[#8b5a2b]/40 text-xs shadow-inner">
             <button
               onClick={() => setActiveTab('dashboard')}
-              className={`px-4 py-1.5 rounded-lg font-bold transition-all ${
-                activeTab === 'dashboard'
-                  ? 'bg-[#8b5a2b] text-[#f7eedc] shadow-sm'
-                  : 'text-[#b89574] hover:text-[#f3e5c8]'
-              }`}
+              className={activeTab === 'dashboard' 
+                ? 'px-4 py-1.5 rounded-lg font-bold transition-all bg-[#8b5a2b] text-[#f7eedc] shadow-sm' 
+                : 'px-4 py-1.5 rounded-lg font-bold transition-all text-[#b89574] hover:text-[#f3e5c8]'}
             >
               Voyage
             </button>
@@ -223,21 +246,17 @@ const Index = () => {
                 setActiveTab('guide');
                 setTimeout(scrollToCurrentArc, 100);
               }}
-              className={`px-4 py-1.5 rounded-lg font-bold transition-all ${
-                activeTab === 'guide'
-                  ? 'bg-[#8b5a2b] text-[#f7eedc] shadow-sm'
-                  : 'text-[#b89574] hover:text-[#f3e5c8]'
-              }`}
+              className={activeTab === 'guide' 
+                ? 'px-4 py-1.5 rounded-lg font-bold transition-all bg-[#8b5a2b] text-[#f7eedc] shadow-sm' 
+                : 'px-4 py-1.5 rounded-lg font-bold transition-all text-[#b89574] hover:text-[#f3e5c8]'}
             >
               Logbook
             </button>
             <button
               onClick={() => setActiveTab('profile')}
-              className={`px-4 py-1.5 rounded-lg font-bold transition-all ${
-                activeTab === 'profile'
-                  ? 'bg-[#8b5a2b] text-[#f7eedc] shadow-sm'
-                  : 'text-[#b89574] hover:text-[#f3e5c8]'
-              }`}
+              className={activeTab === 'profile' 
+                ? 'px-4 py-1.5 rounded-lg font-bold transition-all bg-[#8b5a2b] text-[#f7eedc] shadow-sm' 
+                : 'px-4 py-1.5 rounded-lg font-bold transition-all text-[#b89574] hover:text-[#f3e5c8]'}
             >
               Bounty & Nakama
             </button>
@@ -298,12 +317,7 @@ const Index = () => {
                 arcEpisodes={activeArc.episodes}
                 arcDescription={activeArc.summary}
                 currentEpisode={currentEpisode}
-                onIncrementEpisode={() => {
-                  setCurrentEpisode(prev => {
-                    setCurrentEpisode(prev + 1);
-                    showSuccess(`Logged Ep ${currentEpisode + 1}`);
-                  });
-                }}
+                onIncrementEpisode={() => setCurrentEpisode(prev => prev + 1)}
                 onDecrementEpisode={() => {
                   if (currentEpisode > 1) setCurrentEpisode(prev => prev - 1);
                 }}
@@ -352,22 +366,15 @@ const Index = () => {
             <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none text-xs">
               <button
                 onClick={() => setSelectedSaga('all')}
-                className={`px-3 py-1.5 rounded-xl whitespace-nowrap font-bold transition-all border ${
-                  selectedSaga === 'all'
-                    ? 'bg-[#8b5a2b] text-[#f7eedc] border-[#8b5a2b] shadow-sm'
-                    : 'bg-[#f3e5c8] text-[#341d10] border-[#9c6a3b]/60 hover:bg-[#e8d5b3]'
-              `}>
+                className={getSagaButtonClass(selectedSaga === 'all')}
+              >
                 All Sagas
               </button>
               {allSagas.map(saga => (
                 <button
                   key={saga}
                   onClick={() => setSelectedSaga(saga)}
-                  className={`px-3 py-1.5 rounded-xl whitespace-nowrap font-bold transition-all border ${
-                    selectedSaga === saga
-                      ? 'bg-[#8b5a2b] text-[#f7eedc] border-[#8b5a2b] shadow-sm'
-                      : 'bg-[#f3e5c8] text-[#341d10] border-[#9c6a3b]/60 hover:bg-[#e8d5b3]'
-                  }`}
+                  className={getSagaButtonClass(selectedSaga === saga)}
                 >
                   {saga}
                 </button>
@@ -390,22 +397,26 @@ const Index = () => {
               <div className="flex items-center gap-1.5 text-xs font-bold">
                 <button
                   onClick={() => setTypeFilter('all')}
-                  className={`px-3 py-1 rounded-lg transition-colors border ${typeFilter === 'all' ? 'bg-[#8b5a2b] text-[#f7eedc] border-[#8b5a2b]' : 'bg-[#dfcaa5] text-[#341d10] border-[#8b5a2b]/40 hover:bg-[#d5bc93]'"}>`}
+                  className={getFilterButtonClass(typeFilter === 'all')}
+                >
                   All ({filteredItems.length})
                 </button>
                 <button
                   onClick={() => setTypeFilter('canon')}
-                  className={`px-3 py-1 rounded-lg transition-colors border ${typeFilter === 'canon' ? 'bg-[#8b5a2b] text-[#f7eedc] border-[#8b5a2b]' : 'bg-[#dfcaa5] text-[#341d10] border-[#8b5a2b]/40 hover:bg-[#d5bc93]'"}>`}
+                  className={getFilterButtonClass(typeFilter === 'canon')}
+                >
                   Canon
                 </button>
                 <button
                   onClick={() => setTypeFilter('filler')}
-                  className={`px-3 py-1 rounded-lg transition-colors border ${typeFilter === 'filler' ? 'bg-[#8b5a2b] text-[#f7eedc] border-[#8b5a2b]' : 'bg-[#dfcaa5] text-[#341d10] border-[#8b5a2b]/40 hover:bg-[#d5bc93]'"}>`}
+                  className={getFilterButtonClass(typeFilter === 'filler')}
+                >
                   Filler
                 </button>
                 <button
                   onClick={() => setTypeFilter('skip-recommended')}
-                  className={`px-3 py-1 rounded-lg transition-colors border ${typeFilter === 'skip-recommended' ? 'bg-[#8c1d18] text-white border-[#8c1d18]' : 'bg-[#dfcaa5] text-[#341d10] border-[#8b5a2b]/40 hover:bg-[#d5bc93]'"}>`}
+                  className={getFilterButtonClass(typeFilter === 'skip-recommended', true)}
+                >
                   Skips
                 </button>
               </div>
@@ -541,7 +552,7 @@ const Index = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5 items-start">
               <WantedPoster
                 currentEpisode={currentEpisode}
-                completedCount={completedCount}
+                completedCount={completedIds.size}
                 totalArcs={totalItems}
                 username={pirateName}
                 location={pirateLocation}
