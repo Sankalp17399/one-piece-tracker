@@ -1,8 +1,8 @@
 "use client";
 
 import React from 'react';
-import { Compass, Plus, Minus, Check, Sparkles } from 'lucide-react';
-import { CANON_CREW_MEMBERS, CANON_ALLIES } from '@/data/onePieceProgression';
+import { Plus, Minus, Check, ChevronRight } from 'lucide-react';
+import { CANON_CREW_MEMBERS } from '@/data/onePieceProgression';
 
 interface CurrentlyWatchingCardProps {
   arcId: string;
@@ -12,7 +12,6 @@ interface CurrentlyWatchingCardProps {
   currentEpisode: number;
   onIncrementEpisode: () => void;
   onDecrementEpisode: () => void;
-  onSetEpisode: (ep: number) => void;
   onCompleteArc: () => void;
   onOpenLogbook: () => void;
   onOpenCrewRoster: () => void;
@@ -22,109 +21,81 @@ const CurrentlyWatchingCard: React.FC<CurrentlyWatchingCardProps> = ({
   arcId,
   arcTitle,
   arcEpisodes,
-  arcDescription,
   currentEpisode,
   onIncrementEpisode,
   onDecrementEpisode,
-  onSetEpisode: _onSetEpisode,
   onCompleteArc,
   onOpenLogbook,
   onOpenCrewRoster
 }) => {
-  // Find if any crew or ally is linked to this arc
-  const arcCrew = CANON_CREW_MEMBERS.filter(m => m.joinedArcId === arcId);
-  const arcAllies = CANON_ALLIES.filter(a => a.arcId === arcId);
+  const newRecruit = CANON_CREW_MEMBERS.find(m => m.joinedArcId === arcId);
 
   return (
-    <div className="bg-[#f7f1e1] border-2 border-[#8b5a2b]/40 rounded-2xl p-4 sm:p-5 shadow-sm space-y-3 relative overflow-hidden font-serif select-none">
-      {/* Header */}
-      <div className="flex items-center justify-between border-b border-[#8b5a2b]/20 pb-2">
-        <div className="flex items-center gap-1.5 text-[11px] font-sans font-bold uppercase tracking-wider text-[#6e4624]">
-          <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse" />
-          <span>Currently Sailing (Watching)</span>
+    <div className="bg-[#1c120c] border border-white/10 rounded-2xl p-5 text-white font-sans space-y-4 shadow-sm">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-emerald-500" />
+          <span className="text-[11px] font-medium text-white/50 uppercase tracking-wider">Current Arc</span>
         </div>
-        <span className="text-[10px] font-mono font-bold bg-[#ede2ca] text-[#6e4624] px-2 py-0.5 rounded border border-[#8b5a2b]/20">
+        <span className="text-xs font-mono text-white/40 bg-white/5 px-2 py-0.5 rounded-md">
           {arcEpisodes}
         </span>
       </div>
 
-      {/* Arc Title & Info */}
-      <div className="space-y-1">
-        <h3 className="font-bold text-lg text-[#2b1810] leading-snug">{arcTitle}</h3>
-        <p className="text-xs text-[#6e4624] font-sans leading-relaxed line-clamp-2">
-          {arcDescription}
-        </p>
+      <div>
+        <h2 className="text-xl font-semibold tracking-tight text-white">{arcTitle}</h2>
+        {newRecruit && (
+          <button 
+            onClick={onOpenCrewRoster}
+            className="mt-1 text-xs text-amber-400/90 hover:text-amber-300 flex items-center gap-1 transition-colors"
+          >
+            <span>{newRecruit.avatarIcon} Recruits {newRecruit.name}</span>
+            <ChevronRight size={12} />
+          </button>
+        )}
       </div>
 
-      {/* Story Milestones for this arc if any */}
-      {(arcCrew.length > 0 || arcAllies.length > 0) && (
-        <div className="bg-[#ede2ca]/70 border border-[#8b5a2b]/30 rounded-xl p-2.5 flex items-center justify-between text-xs font-sans">
-          <div className="flex items-center gap-1.5 text-[#6e4624] min-w-0">
-            <Sparkles size={14} className="text-amber-700 shrink-0" />
-            <span className="font-medium text-[11px] truncate">
-              {arcCrew.length > 0 
-                ? `Recruits: ${arcCrew.map(c => c.name).join(", ")}` 
-                : `Allies: ${arcAllies.map(a => a.name).join(", ")}`}
-            </span>
-          </div>
-          <button
-            onClick={onOpenCrewRoster}
-            className="text-[10px] font-bold text-[#2b1810] underline whitespace-nowrap ml-2 shrink-0"
-          >
-            View Roster
-          </button>
-        </div>
-      )}
-
-      {/* Episode Log Stepper */}
-      <div className="bg-[#ede2ca] border border-[#8b5a2b]/30 rounded-xl p-3 flex items-center justify-between">
+      {/* Minimal Episode Stepper */}
+      <div className="bg-white/5 border border-white/5 rounded-xl p-3.5 flex items-center justify-between">
         <div>
-          <p className="text-[10px] font-sans font-bold uppercase text-[#8b5a2b] tracking-wider">
-            Current Episode Log
-          </p>
-          <div className="flex items-baseline gap-1.5 mt-0.5">
-            <span className="text-xl font-bold font-mono text-[#2b1810]">
-              Ep. {currentEpisode}
-            </span>
-          </div>
+          <span className="text-[10px] text-white/40 uppercase tracking-wider font-semibold">Progress</span>
+          <p className="text-2xl font-bold font-mono tracking-tight text-white">Ep {currentEpisode}</p>
         </div>
 
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-2">
           <button
             onClick={onDecrementEpisode}
-            className="w-8 h-8 rounded-lg bg-[#f7f1e1] hover:bg-[#dfd0b5] border border-[#8b5a2b]/30 text-[#2b1810] flex items-center justify-center transition-all active:scale-95 shadow-sm"
-            title="Previous Episode"
+            className="w-9 h-9 rounded-xl bg-white/10 hover:bg-white/15 text-white/80 flex items-center justify-center transition-all active:scale-95"
+            aria-label="Previous episode"
           >
-            <Minus size={14} />
+            <Minus size={15} />
           </button>
 
           <button
             onClick={onIncrementEpisode}
-            className="h-8 px-3 rounded-lg bg-[#6e4624] hover:bg-[#573519] text-[#f7f1e1] font-sans text-xs font-bold flex items-center gap-1 transition-all active:scale-95 shadow"
-            title="Next Episode (+1)"
+            className="h-9 px-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-semibold text-xs flex items-center gap-1.5 transition-all active:scale-95 shadow-sm"
           >
-            <Plus size={14} />
-            <span>+1 Ep</span>
+            <Plus size={15} />
+            <span>Next Ep</span>
           </button>
         </div>
       </div>
 
-      {/* Action Buttons */}
-      <div className="flex gap-2 pt-1">
+      {/* Action Footer */}
+      <div className="flex items-center gap-2 pt-1">
         <button
           onClick={onCompleteArc}
-          className="flex-1 bg-[#6e4624] hover:bg-[#573519] text-[#f7f1e1] font-sans font-semibold py-2.5 rounded-xl shadow active:scale-98 transition-all flex items-center justify-center gap-1.5 text-xs uppercase tracking-wider"
+          className="flex-1 bg-white/10 hover:bg-white/15 text-white text-xs font-medium py-2.5 rounded-xl transition-all active:scale-98 flex items-center justify-center gap-1.5"
         >
-          <Check size={14} /> Finish Arc
+          <Check size={14} className="text-emerald-400" />
+          <span>Mark Arc Completed</span>
         </button>
 
         <button
           onClick={onOpenLogbook}
-          className="px-3 bg-[#ede2ca] hover:bg-[#dfd0b5] border border-[#8b5a2b]/30 text-[#6e4624] font-sans text-xs font-semibold rounded-xl flex items-center justify-center gap-1 transition-all"
-          title="Change Arc"
+          className="px-4 py-2.5 bg-transparent hover:bg-white/5 text-white/60 hover:text-white text-xs font-medium rounded-xl transition-all border border-white/10"
         >
-          <Compass size={14} />
-          <span>Switch</span>
+          Change
         </button>
       </div>
     </div>
