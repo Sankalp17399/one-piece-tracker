@@ -27,9 +27,9 @@ const WantedPoster: React.FC<WantedPosterProps> = ({
   const unlockedCrew = getUnlockedCrew(currentEpisode);
 
   return (
-    <div className="relative max-w-sm mx-auto select-none">
+    <div className="relative w-full max-w-sm mx-auto select-none">
       {/* Tactile Aged Parchment Poster */}
-      <div className="bg-[#f3e5c8] text-[#341d10] p-6 sm:p-7 rounded-2xl shadow-[0_20px_45px_rgba(0,0,0,0.65),inset_0_0_40px_rgba(139,90,43,0.22)] border-[3px] border-[#9c6a3b]/80 relative overflow-hidden font-serif">
+      <div className="bg-[#f3e5c8] text-[#341d10] p-5 sm:p-6 rounded-2xl shadow-[0_20px_45px_rgba(0,0,0,0.65),inset_0_0_40px_rgba(139,90,43,0.22)] border-[3px] border-[#9c6a3b]/80 relative overflow-hidden font-serif">
         
         {/* Subtle Paper Grain & Stained Edge Overlay */}
         <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,transparent_55%,rgba(100,50,15,0.18)_100%)]" />
@@ -54,12 +54,12 @@ const WantedPoster: React.FC<WantedPosterProps> = ({
         </div>
 
         {/* Portrait Photo Stamp Box */}
-        <div className="relative z-10 my-4 bg-[#e8d5b3] border-[3px] border-[#6b4221] rounded-xl p-5 text-center shadow-[inset_0_2px_8px_rgba(0,0,0,0.2)]">
-          <div className="w-20 h-20 mx-auto rounded-full bg-[#dfc59e] border-2 border-[#8a572a] shadow-inner flex items-center justify-center text-3xl font-black text-[#44220d]">
+        <div className="relative z-10 my-4 bg-[#e8d5b3] border-[3px] border-[#6b4221] rounded-xl p-4 text-center shadow-[inset_0_2px_8px_rgba(0,0,0,0.2)]">
+          <div className="w-16 h-16 mx-auto rounded-full bg-[#dfc59e] border-2 border-[#8a572a] shadow-inner flex items-center justify-center text-2xl font-black text-[#44220d]">
             {username[0]?.toUpperCase() || 'C'}
           </div>
 
-          <h3 className="mt-3 text-lg sm:text-xl font-black uppercase text-[#2b1407] tracking-wider truncate">
+          <h3 className="mt-2 text-base sm:text-lg font-black uppercase text-[#2b1407] tracking-wider truncate">
             {username}
           </h3>
           <p className="text-[11px] text-[#6b482b] font-medium tracking-wide italic">

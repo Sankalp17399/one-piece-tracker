@@ -10,7 +10,7 @@ interface MobileBottomNavProps {
 
 const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ activeTab, setActiveTab }) => {
   return (
-    <nav className="md:hidden fixed bottom-3 left-4 right-4 z-40 bg-[#160d08]/95 backdrop-blur-md border border-[#8b5a2b]/40 px-4 py-2 flex items-center justify-around shadow-2xl rounded-2xl">
+    <nav className="md:hidden fixed bottom-4 left-4 right-4 z-40 bg-[#25150c]/95 backdrop-blur-md border border-[#8b5a2b]/40 px-4 py-2.5 flex items-center justify-around shadow-2xl rounded-2xl">
       <button
         onClick={() => setActiveTab('dashboard')}
         className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl transition-all ${

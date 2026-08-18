@@ -275,7 +275,40 @@ const Index = () => {
         {/* TAB 1: VOYAGE */}
         {activeTab === 'dashboard' && (
           <div className="space-y-5 animate-in fade-in duration-150">
-            {/* Top Captain Overview */}
+            {/* Grand Line Log - Prominent First */}
+            <div className="bg-[#f3e5c8] border-[3px] border-[#9c6a3b]/80 rounded-2xl p-4 text-[#341d10] shadow-[0_8px_20px_rgba(0,0,0,0.4)]">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 rounded-xl bg-[#dfc59e] border-2 border-[#8b5a2b] text-[#3e200c] font-black flex items-center justify-center text-lg shadow-inner">
+                  <BookOpen size={18} className="text-[#8b5a2b]" />
+                </div>
+                <div>
+                  <h2 className="text-lg font-black text-[#2b1407] leading-tight">Grand Line Log</h2>
+                  <p className="text-xs text-[#704b2b] italic">Your voyage across the seas</p>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="bg-[#e8d5b3] border border-[#8b5a2b]/40 rounded-xl p-3">
+                  <span className="text-[9px] uppercase tracking-wider font-bold text-[#704b2b]">Active Island Destination</span>
+                  <p className="text-sm font-black text-[#2b1407] mt-1 truncate">
+                    {activeArc.title}
+                  </p>
+                  <p className="text-[10px] text-[#704b2b] font-mono mt-0.5">{activeArc.episodes}</p>
+                </div>
+                
+                <div className="bg-[#e8d5b3] border border-[#8b5a2b]/40 rounded-xl p-3">
+                  <span className="text-[9px] uppercase tracking-wider font-bold text-[#704b2b]">Current Entry</span>
+                  <p className="text-sm font-black text-[#2b1407] mt-1 font-mono">
+                    Ep {currentEpisode} / {TOTAL_ANIME_EPISODES}
+                  </p>
+                  <p className="text-[10px] text-[#704b2b] mt-0.5">
+                    {Math.round((currentEpisode / TOTAL_ANIME_EPISODES) * 100)}% Complete
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Captain Overview */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="md:col-span-2 bg-[#f3e5c8] border-[3px] border-[#9c6a3b]/80 rounded-2xl p-4 flex items-center justify-between text-[#341d10] shadow-[0_8px_20px_rgba(0,0,0,0.4)]">
                 <div className="flex items-center gap-3">
@@ -340,7 +373,7 @@ const Index = () => {
 
         {/* TAB 2: LOGBOOK */}
         {activeTab === 'guide' && (
-          <div className="space-y-4 animate-in fade-in duration-150">
+          <div className="space-y-4 animate-in fade-in duration-151">
             {/* Quick Jump Bar */}
             <div className="bg-[#f3e5c8] border-[3px] border-[#9c6a3b]/80 rounded-2xl p-3 flex items-center justify-between gap-3 text-[#341d10] shadow-[0_8px_20px_rgba(0,0,0,0.4)]">
               <div className="flex items-center gap-2.5 min-w-0">
@@ -548,7 +581,7 @@ const Index = () => {
 
         {/* TAB 3: BOUNTY & NAKAMA */}
         {activeTab === 'profile' && (
-          <div className="space-y-5 animate-in fade-in duration-150">
+          <div className="space-y-5 animate-in fade-in duration-151">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5 items-start">
               <WantedPoster
                 currentEpisode={currentEpisode}
