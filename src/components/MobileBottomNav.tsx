@@ -21,7 +21,7 @@ const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ activeTab, setActiveT
           }`}
         >
           <Compass size={16} />
-          <span className="hidden sm:inline">Voyage</span>
+          <span>Voyage</span>
         </button>
 
         <button
@@ -33,7 +33,7 @@ const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ activeTab, setActiveT
           }`}
         >
           <BookOpen size={16} />
-          <span className="hidden sm:inline">Logbook</span>
+          <span>Logbook</span>
         </button>
 
         <button
@@ -45,7 +45,7 @@ const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ activeTab, setActiveT
           }`}
         >
           <Scroll size={16} />
-          <span className="hidden sm:inline">Bounty</span>
+          <span>Bounty</span>
         </button>
       </div>
     </nav>
