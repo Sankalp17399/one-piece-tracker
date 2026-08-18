@@ -13,8 +13,9 @@ import {
   Upload, 
   Play,
   RotateCcw,
-  Sparkles,
-  BookOpen
+  BookOpen,
+  Compass,
+  Radio
 } from 'lucide-react';
 import WantedPoster from '@/components/WantedPoster';
 import SailingMap from '@/components/SailingMap';
@@ -23,6 +24,7 @@ import MobileBottomNav from '@/components/MobileBottomNav';
 import InstallPWAModal from '@/components/InstallPWAModal';
 import EditProfileModal from '@/components/EditProfileModal';
 import OnboardingModal from '@/components/OnboardingModal';
+import CurrentlyWatchingCard from '@/components/CurrentlyWatchingCard';
 import { showSuccess, showError } from '@/utils/toast';
 import confetti from 'canvas-confetti';
 
@@ -30,6 +32,7 @@ interface GuideItem {
   id: string;
   title: string;
   episodes: string;
+  startEp: number;
   type: 'canon' | 'filler';
   description: string;
   saga: string;
@@ -37,52 +40,52 @@ interface GuideItem {
 
 const guideData: GuideItem[] = [
   // --- East Blue Saga ---
-  { id: "1", title: "Romance Dawn", episodes: "Ep 1-3", type: "canon", description: "Luffy sets sail and recruits swordsman Roronoa Zoro.", saga: "East Blue" },
-  { id: "2", title: "Orange Town", episodes: "Ep 4-8", type: "canon", description: "Encounter with the thief Nami and pirate Buggy the Clown.", saga: "East Blue" },
-  { id: "3", title: "Syrup Village", episodes: "Ep 9-18", type: "canon", description: "Usopp joins the crew; Going Merry is acquired.", saga: "East Blue" },
-  { id: "4", title: "Baratie Sea Restaurant", episodes: "Ep 19-30", type: "canon", description: "Cook Sanji joins; encounter with warlord Dracule Mihawk.", saga: "East Blue" },
-  { id: "5", title: "Arlong Park", episodes: "Ep 31-44", type: "canon", description: "Showdown at Arlong Park to free Nami and Cocoyasi Village.", saga: "East Blue" },
-  { id: "6", title: "Loguetown", episodes: "Ep 45, 48-53", type: "canon", description: "The town where the Pirate King Gol D. Roger was born and died.", saga: "East Blue" },
-  { id: "7", title: "Warship Island", episodes: "Ep 54-61", type: "filler", description: "Legendary dragon filler before entering the Calm Belt.", saga: "East Blue" },
+  { id: "1", title: "Romance Dawn", episodes: "Ep 1-3", startEp: 1, type: "canon", description: "Luffy sets sail and recruits swordsman Roronoa Zoro.", saga: "East Blue" },
+  { id: "2", title: "Orange Town", episodes: "Ep 4-8", startEp: 4, type: "canon", description: "Encounter with the thief Nami and pirate Buggy the Clown.", saga: "East Blue" },
+  { id: "3", title: "Syrup Village", episodes: "Ep 9-18", startEp: 9, type: "canon", description: "Usopp joins the crew; Going Merry is acquired.", saga: "East Blue" },
+  { id: "4", title: "Baratie Sea Restaurant", episodes: "Ep 19-30", startEp: 19, type: "canon", description: "Cook Sanji joins; encounter with warlord Dracule Mihawk.", saga: "East Blue" },
+  { id: "5", title: "Arlong Park", episodes: "Ep 31-44", startEp: 31, type: "canon", description: "Showdown at Arlong Park to free Nami and Cocoyasi Village.", saga: "East Blue" },
+  { id: "6", title: "Loguetown", episodes: "Ep 45, 48-53", startEp: 45, type: "canon", description: "The town where the Pirate King Gol D. Roger was born and died.", saga: "East Blue" },
+  { id: "7", title: "Warship Island", episodes: "Ep 54-61", startEp: 54, type: "filler", description: "Legendary dragon filler before entering the Calm Belt.", saga: "East Blue" },
 
   // --- Alabasta Saga ---
-  { id: "8", title: "Reverse Mountain & Laboon", episodes: "Ep 62-63", type: "canon", description: "Crossing the red line and meeting the whale Laboon.", saga: "Alabasta" },
-  { id: "9", title: "Whisky Peak", episodes: "Ep 64-67", type: "canon", description: "Baroque Works assassins and alliance with Princess Vivi.", saga: "Alabasta" },
-  { id: "10", title: "Little Garden", episodes: "Ep 70-77", type: "canon", description: "Prehistoric island duel between giants Dorry and Brogy.", saga: "Alabasta" },
-  { id: "11", title: "Drum Island", episodes: "Ep 78-91", type: "canon", description: "Winter island journey; doctor Tony Tony Chopper joins.", saga: "Alabasta" },
-  { id: "12", title: "Alabasta Kingdom", episodes: "Ep 92-130", type: "canon", description: "Civil war battle against warlord Sir Crocodile.", saga: "Alabasta" },
-  { id: "13", title: "Post-Alabasta Stories", episodes: "Ep 131-143", type: "filler", description: "Short crew episodic fillers.", saga: "Alabasta" },
+  { id: "8", title: "Reverse Mountain & Laboon", episodes: "Ep 62-63", startEp: 62, type: "canon", description: "Crossing the red line and meeting the whale Laboon.", saga: "Alabasta" },
+  { id: "9", title: "Whisky Peak", episodes: "Ep 64-67", startEp: 64, type: "canon", description: "Baroque Works assassins and alliance with Princess Vivi.", saga: "Alabasta" },
+  { id: "10", title: "Little Garden", episodes: "Ep 70-77", startEp: 70, type: "canon", description: "Prehistoric island duel between giants Dorry and Brogy.", saga: "Alabasta" },
+  { id: "11", title: "Drum Island", episodes: "Ep 78-91", startEp: 78, type: "canon", description: "Winter island journey; doctor Tony Tony Chopper joins.", saga: "Alabasta" },
+  { id: "12", title: "Alabasta Kingdom", episodes: "Ep 92-130", startEp: 92, type: "canon", description: "Civil war battle against warlord Sir Crocodile.", saga: "Alabasta" },
+  { id: "13", title: "Post-Alabasta Stories", episodes: "Ep 131-143", startEp: 131, type: "filler", description: "Short crew episodic fillers.", saga: "Alabasta" },
 
   // --- Sky Island Saga ---
-  { id: "14", title: "Jaya & Mock Town", episodes: "Ep 144-152", type: "canon", description: "First encounter with Blackbeard and Bellamy.", saga: "Sky Island" },
-  { id: "15", title: "Skypiea", episodes: "Ep 153-195", type: "canon", description: "The lost city of gold in the sea of clouds vs God Enel.", saga: "Sky Island" },
-  { id: "16", title: "G-8 Marine Base", episodes: "Ep 196-206", type: "filler", description: "Navarone marine base infiltration. High quality story.", saga: "Sky Island" },
+  { id: "14", title: "Jaya & Mock Town", episodes: "Ep 144-152", startEp: 144, type: "canon", description: "First encounter with Blackbeard and Bellamy.", saga: "Sky Island" },
+  { id: "15", title: "Skypiea", episodes: "Ep 153-195", startEp: 153, type: "canon", description: "The lost city of gold in the sea of clouds vs God Enel.", saga: "Sky Island" },
+  { id: "16", title: "G-8 Marine Base", episodes: "Ep 196-206", startEp: 196, type: "filler", description: "Navarone marine base infiltration. High quality story.", saga: "Sky Island" },
 
   // --- Water 7 Saga ---
-  { id: "17", title: "Water 7", episodes: "Ep 227-263", type: "canon", description: "Shipwright city, CP9 conspiracy, and crew fallout.", saga: "Water 7" },
-  { id: "18", title: "Enies Lobby", episodes: "Ep 264-312", type: "canon", description: "Invasion of judicial island to save Nico Robin; Gear 2nd debut.", saga: "Water 7" },
-  { id: "19", title: "Post-Enies Lobby", episodes: "Ep 313-325", type: "canon", description: "Franky crafts Thousand Sunny; Ace confronts Blackbeard.", saga: "Water 7" },
+  { id: "17", title: "Water 7", episodes: "Ep 227-263", startEp: 227, type: "canon", description: "Shipwright city, CP9 conspiracy, and crew fallout.", saga: "Water 7" },
+  { id: "18", title: "Enies Lobby", episodes: "Ep 264-312", startEp: 264, type: "canon", description: "Invasion of judicial island to save Nico Robin; Gear 2nd debut.", saga: "Water 7" },
+  { id: "19", title: "Post-Enies Lobby", episodes: "Ep 313-325", startEp: 313, type: "canon", description: "Franky crafts Thousand Sunny; Ace confronts Blackbeard.", saga: "Water 7" },
 
   // --- Thriller Bark Saga ---
-  { id: "20", title: "Thriller Bark", episodes: "Ep 337-381", type: "canon", description: "Ghost ship island, warlord Gecko Moria, and Brook joins.", saga: "Thriller Bark" },
+  { id: "20", title: "Thriller Bark", episodes: "Ep 337-381", startEp: 337, type: "canon", description: "Ghost ship island, warlord Gecko Moria, and Brook joins.", saga: "Thriller Bark" },
 
   // --- Summit War Saga ---
-  { id: "21", title: "Sabaody Archipelago", episodes: "Ep 385-405", type: "canon", description: "Celestial Dragons clash and the crew separation disaster.", saga: "Summit War" },
-  { id: "22", title: "Amazon Lily", episodes: "Ep 408-421", type: "canon", description: "Island of women ruled by warlord Boa Hancock.", saga: "Summit War" },
-  { id: "23", title: "Impel Down", episodes: "Ep 422-452", type: "canon", description: "Underwater great prison infiltration to save Portgas D. Ace.", saga: "Summit War" },
-  { id: "24", title: "Marineford", episodes: "Ep 457-489", type: "canon", description: "Whitebeard Pirates vs Marine HQ in the Paramount War.", saga: "Summit War" },
-  { id: "25", title: "Post-War & 3D2Y", episodes: "Ep 490-516", type: "canon", description: "Childhood brothers flashback and the 2-year training pledge.", saga: "Summit War" },
+  { id: "21", title: "Sabaody Archipelago", episodes: "Ep 385-405", startEp: 385, type: "canon", description: "Celestial Dragons clash and the crew separation disaster.", saga: "Summit War" },
+  { id: "22", title: "Amazon Lily", episodes: "Ep 408-421", startEp: 408, type: "canon", description: "Island of women ruled by warlord Boa Hancock.", saga: "Summit War" },
+  { id: "23", title: "Impel Down", episodes: "Ep 422-452", startEp: 422, type: "canon", description: "Underwater great prison infiltration to save Portgas D. Ace.", saga: "Summit War" },
+  { id: "24", title: "Marineford", episodes: "Ep 457-489", startEp: 457, type: "canon", description: "Whitebeard Pirates vs Marine HQ in the Paramount War.", saga: "Summit War" },
+  { id: "25", title: "Post-War & 3D2Y", episodes: "Ep 490-516", startEp: 490, type: "canon", description: "Childhood brothers flashback and the 2-year training pledge.", saga: "Summit War" },
 
   // --- New World Sagas ---
-  { id: "26", title: "Return to Sabaody", episodes: "Ep 517-522", type: "canon", description: "The Straw Hats reunite stronger after 2 years.", saga: "Fishman Island" },
-  { id: "27", title: "Fishman Island", episodes: "Ep 523-574", type: "canon", description: "Voyage 10,000 meters beneath the sea to Ryugu Kingdom.", saga: "Fishman Island" },
-  { id: "28", title: "Punk Hazard", episodes: "Ep 579-625", type: "canon", description: "Alliance with Trafalgar Law and Caesar Clown's lab.", saga: "Dressrosa" },
-  { id: "29", title: "Dressrosa", episodes: "Ep 629-746", type: "canon", description: "Colosseum tournament & overthrowing Donquixote Doflamingo.", saga: "Dressrosa" },
-  { id: "30", title: "Zou Island", episodes: "Ep 751-779", type: "canon", description: "The back of the giant elephant Zunesha & Road Poneglyphs.", saga: "Whole Cake Island" },
-  { id: "31", title: "Whole Cake Island", episodes: "Ep 783-877", type: "canon", description: "Tea party infiltration vs Emperor Big Mom and Katakuri.", saga: "Whole Cake Island" },
-  { id: "32", title: "Levely / Reverie", episodes: "Ep 878-889", type: "canon", description: "World summit of monarchies and secrets of Mary Geoise.", saga: "Whole Cake Island" },
-  { id: "33", title: "Wano Country", episodes: "Ep 890-1085", type: "canon", description: "Samurai raid on Onigashima vs Emperor Kaido; Gear 5th awakens.", saga: "Wano Country" },
-  { id: "34", title: "Egghead Island", episodes: "Ep 1086-Present", type: "canon", description: "Future island of Dr. Vegapunk and truth of the Void Century.", saga: "Final Saga" }
+  { id: "26", title: "Return to Sabaody", episodes: "Ep 517-522", startEp: 517, type: "canon", description: "The Straw Hats reunite stronger after 2 years.", saga: "Fishman Island" },
+  { id: "27", title: "Fishman Island", episodes: "Ep 523-574", startEp: 523, type: "canon", description: "Voyage 10,000 meters beneath the sea to Ryugu Kingdom.", saga: "Fishman Island" },
+  { id: "28", title: "Punk Hazard", episodes: "Ep 579-625", startEp: 579, type: "canon", description: "Alliance with Trafalgar Law and Caesar Clown's lab.", saga: "Dressrosa" },
+  { id: "29", title: "Dressrosa", episodes: "Ep 629-746", startEp: 629, type: "canon", description: "Colosseum tournament & overthrowing Donquixote Doflamingo.", saga: "Dressrosa" },
+  { id: "30", title: "Zou Island", episodes: "Ep 751-779", startEp: 751, type: "canon", description: "The back of the giant elephant Zunesha & Road Poneglyphs.", saga: "Whole Cake Island" },
+  { id: "31", title: "Whole Cake Island", episodes: "Ep 783-877", startEp: 783, type: "canon", description: "Tea party infiltration vs Emperor Big Mom and Katakuri.", saga: "Whole Cake Island" },
+  { id: "32", title: "Levely / Reverie", episodes: "Ep 878-889", startEp: 878, type: "canon", description: "World summit of monarchies and secrets of Mary Geoise.", saga: "Whole Cake Island" },
+  { id: "33", title: "Wano Country", episodes: "Ep 890-1085", startEp: 890, type: "canon", description: "Samurai raid on Onigashima vs Emperor Kaido; Gear 5th awakens.", saga: "Wano Country" },
+  { id: "34", title: "Egghead Island", episodes: "Ep 1086-Present", startEp: 1086, type: "canon", description: "Future island of Dr. Vegapunk and truth of the Void Century.", saga: "Final Saga" }
 ];
 
 const Index = () => {
@@ -110,6 +113,16 @@ const Index = () => {
     return saved ? new Set(JSON.parse(saved)) : new Set();
   });
 
+  // Currently Watching State
+  const [currentArcId, setCurrentArcId] = useState<string>(() => {
+    return localStorage.getItem('currentWatchingArcId') || "1";
+  });
+
+  const [currentEpisode, setCurrentEpisode] = useState<number>(() => {
+    const saved = localStorage.getItem('currentWatchingEpisode');
+    return saved ? parseInt(saved, 10) : 1;
+  });
+
   const [customNotes, setCustomNotes] = useState<Record<string, string>>(() => {
     const saved = localStorage.getItem('customArcNotes');
     return saved ? JSON.parse(saved) : {};
@@ -130,6 +143,8 @@ const Index = () => {
   // Storage Persistence
   useEffect(() => localStorage.setItem('completedArcs', JSON.stringify(Array.from(completedIds))), [completedIds]);
   useEffect(() => localStorage.setItem('bookmarkedArcs', JSON.stringify(Array.from(bookmarkedIds))), [bookmarkedIds]);
+  useEffect(() => localStorage.setItem('currentWatchingArcId', currentArcId), [currentArcId]);
+  useEffect(() => localStorage.setItem('currentWatchingEpisode', currentEpisode.toString()), [currentEpisode]);
   useEffect(() => localStorage.setItem('customArcNotes', JSON.stringify(customNotes)), [customNotes]);
   useEffect(() => localStorage.setItem('pirateName', pirateName), [pirateName]);
   useEffect(() => localStorage.setItem('pirateLocation', pirateLocation), [pirateLocation]);
@@ -139,7 +154,9 @@ const Index = () => {
   const totalItems = guideData.length;
   const completedCount = completedIds.size;
   const progressPercentage = totalItems > 0 ? (completedCount / totalItems) * 100 : 0;
-  const nextArc = guideData.find(item => !completedIds.has(item.id)) || guideData[guideData.length - 1];
+  
+  // Find current watching arc item
+  const activeArc = guideData.find(item => item.id === currentArcId) || guideData[0];
 
   const handleOnboardingComplete = (data: { name: string; location: string; title: string }) => {
     setPirateName(data.name);
@@ -148,6 +165,12 @@ const Index = () => {
     localStorage.setItem('hasCompletedOnboarding', 'true');
     setIsOnboardingOpen(false);
     showSuccess(`Welcome aboard, ${data.name}!`);
+  };
+
+  const setWatchingArc = (arc: GuideItem) => {
+    setCurrentArcId(arc.id);
+    setCurrentEpisode(arc.startEp);
+    showSuccess(`Now watching: ${arc.title}`);
   };
 
   const toggleComplete = (id: string) => {
@@ -160,7 +183,13 @@ const Index = () => {
         confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 } });
         showSuccess("Grand Line fully mapped!");
       } else {
-        showSuccess("Entry recorded in diary.");
+        showSuccess("Arc completed and recorded!");
+        // Auto-advance to next unfinished arc
+        const nextIncomplete = guideData.find(item => !nextSet.has(item.id));
+        if (nextIncomplete) {
+          setCurrentArcId(nextIncomplete.id);
+          setCurrentEpisode(nextIncomplete.startEp);
+        }
       }
     }
     setCompletedIds(nextSet);
@@ -187,6 +216,8 @@ const Index = () => {
       pirateLocation,
       joinedDate,
       pirateTitle,
+      currentWatchingArcId: currentArcId,
+      currentWatchingEpisode: currentEpisode,
       completedArcs: Array.from(completedIds),
       bookmarkedArcs: Array.from(bookmarkedIds),
       customArcNotes: customNotes
@@ -210,6 +241,8 @@ const Index = () => {
           if (parsed.pirateLocation) setPirateLocation(parsed.pirateLocation);
           if (parsed.joinedDate) setJoinedDate(parsed.joinedDate);
           if (parsed.pirateTitle) setPirateTitle(parsed.pirateTitle);
+          if (parsed.currentWatchingArcId) setCurrentArcId(parsed.currentWatchingArcId);
+          if (parsed.currentWatchingEpisode) setCurrentEpisode(parsed.currentWatchingEpisode);
           if (parsed.completedArcs) setCompletedIds(new Set(parsed.completedArcs));
           if (parsed.bookmarkedArcs) setBookmarkedIds(new Set(parsed.bookmarkedArcs));
           if (parsed.customArcNotes) setCustomNotes(parsed.customArcNotes);
@@ -293,30 +326,28 @@ const Index = () => {
               </div>
             </div>
 
+            {/* Currently Watching Stage Card */}
+            <CurrentlyWatchingCard
+              arcTitle={activeArc.title}
+              arcEpisodes={activeArc.episodes}
+              arcDescription={activeArc.description}
+              currentEpisode={currentEpisode}
+              onIncrementEpisode={() => {
+                setCurrentEpisode(prev => prev + 1);
+                showSuccess(`Logged Ep. ${currentEpisode + 1}`);
+              }}
+              onDecrementEpisode={() => {
+                if (currentEpisode > 1) {
+                  setCurrentEpisode(prev => prev - 1);
+                }
+              }}
+              onSetEpisode={(ep) => setCurrentEpisode(ep)}
+              onCompleteArc={() => toggleComplete(activeArc.id)}
+              onOpenLogbook={() => setActiveTab('guide')}
+            />
+
             {/* Antique Route Map */}
-            <SailingMap progress={progressPercentage} currentArc={nextArc?.title || 'Unknown'} />
-
-            {/* Current Log Entry Card */}
-            <div className="bg-[#f7f1e1] border-2 border-[#8b5a2b]/30 rounded-2xl p-4 shadow-sm space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-[11px] font-sans font-bold uppercase text-[#6e4624] flex items-center gap-1">
-                  <Play size={12} className="fill-current" /> Next Port of Call
-                </span>
-                <span className="text-[10px] font-mono font-bold bg-[#ede2ca] px-2 py-0.5 rounded text-[#6e4624]">
-                  {nextArc?.episodes}
-                </span>
-              </div>
-
-              <h3 className="font-bold text-base text-[#2b1810]">{nextArc?.title}</h3>
-              <p className="text-xs text-[#6e4624] font-sans leading-relaxed">{nextArc?.description}</p>
-
-              <button
-                onClick={() => nextArc && toggleComplete(nextArc.id)}
-                className="w-full mt-2 bg-[#6e4624] hover:bg-[#573519] text-[#f7f1e1] font-sans font-semibold py-2.5 rounded-xl shadow-md active:scale-98 transition-all flex items-center justify-center gap-1.5 text-xs uppercase tracking-wider"
-              >
-                <Check size={14} /> Record Completion
-              </button>
-            </div>
+            <SailingMap progress={progressPercentage} currentArc={activeArc?.title || 'East Blue'} />
           </div>
         )}
 
@@ -360,6 +391,7 @@ const Index = () => {
               {filteredItems.map((item) => {
                 const isCompleted = completedIds.has(item.id);
                 const isBookmarked = bookmarkedIds.has(item.id);
+                const isCurrentlyWatching = currentArcId === item.id;
                 const isExpanded = expandedId === item.id;
                 const currentNote = customNotes[item.id] || '';
 
@@ -367,7 +399,9 @@ const Index = () => {
                   <div 
                     key={item.id}
                     className={`border rounded-xl transition-all overflow-hidden ${
-                      isCompleted 
+                      isCurrentlyWatching
+                        ? 'bg-[#fdf8eb] border-[#8b5a2b] ring-2 ring-[#8b5a2b]/30 shadow-md'
+                        : isCompleted 
                         ? 'bg-[#eae0cb] border-[#8b5a2b]/20 opacity-75' 
                         : 'bg-[#f7f1e1] border-[#8b5a2b]/30 shadow-sm'
                     }`}
@@ -392,11 +426,19 @@ const Index = () => {
                         </button>
 
                         <div className="min-w-0 flex-1">
-                          <h4 className={`font-serif font-bold text-xs text-[#2b1810] truncate ${
-                            isCompleted ? 'line-through text-[#8b5a2b]' : ''
-                          }`}>
-                            {item.title}
-                          </h4>
+                          <div className="flex items-center gap-1.5 truncate">
+                            <h4 className={`font-serif font-bold text-xs text-[#2b1810] truncate ${
+                              isCompleted ? 'line-through text-[#8b5a2b]' : ''
+                            }`}>
+                              {item.title}
+                            </h4>
+                            {isCurrentlyWatching && (
+                              <span className="shrink-0 text-[9px] font-sans font-bold bg-[#6e4624] text-[#f7f1e1] px-1.5 py-0.2 rounded">
+                                Watching
+                              </span>
+                            )}
+                          </div>
+
                           <div className="flex items-center gap-1.5 mt-0.5">
                             <span className="text-[9px] font-mono text-[#6e4624] bg-[#ede2ca] px-1.5 py-0.2 rounded">
                               {item.episodes}
@@ -409,6 +451,18 @@ const Index = () => {
                       </div>
 
                       <div className="flex items-center gap-1.5">
+                        {!isCurrentlyWatching && !isCompleted && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setWatchingArc(item);
+                            }}
+                            className="p-1 rounded text-[#8b5a2b]/60 hover:text-[#6e4624] hover:bg-[#ede2ca] transition-colors"
+                            title="Set as Currently Watching"
+                          >
+                            <Play size={13} />
+                          </button>
+                        )}
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
@@ -423,8 +477,18 @@ const Index = () => {
                     </div>
 
                     {isExpanded && (
-                      <div className="p-3 border-t border-dashed border-[#8b5a2b]/30 bg-[#ede2ca]/60 font-sans text-xs space-y-2">
+                      <div className="p-3 border-t border-dashed border-[#8b5a2b]/30 bg-[#ede2ca]/60 font-sans text-xs space-y-2.5">
                         <p className="text-[#6e4624] leading-relaxed">{item.description}</p>
+                        
+                        {!isCurrentlyWatching && (
+                          <button
+                            onClick={() => setWatchingArc(item)}
+                            className="bg-[#6e4624] hover:bg-[#573519] text-[#f7f1e1] px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 shadow-sm active:scale-95 transition-all"
+                          >
+                            <Play size={12} className="fill-current" /> Set as Currently Watching
+                          </button>
+                        )}
+
                         <div className="space-y-1">
                           <label className="block text-[9px] font-bold uppercase tracking-wider text-[#8b5a2b]">
                             Personal Journal Note
