@@ -1,8 +1,9 @@
+prev - 1) with setStep(step - 1)">
 "use client";
 
-import React, { useState } from 'react';
-import { Anchor, Sparkles, Feather, Compass, CheckCircle2, ChevronRight } from 'lucide-react';
-import confetti from 'canvas-confetti';
+import React, { useState } from "react";
+import { Anchor, Sparkles, Feather, Compass, CheckCircle2, X } from "lucide-react";
+import confetti from "canvas-confetti";
 
 interface OnboardingModalProps {
   isOpen: boolean;
@@ -58,6 +59,20 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onComplete })
         {/* Subtle vintage parchment texture vignette */}
         <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(#8b5a2b_1px,transparent_1px)] opacity-5 [background-size:12px_12px]" />
         
+        {/* Close Button - Icon Only */}
+        <button
+          onClick={() => {
+            if (step > 1) {
+              setStep(step - 1);
+            } else {
+              handleFinish();
+            }
+          }}
+          className="absolute top-4 right-4 text-[#8b5a2b] hover:text-[#2b1810] hover:bg-[#dfcbb5] p-2 rounded-full transition-colors"
+        >
+          <X size={20} />
+        </button>
+
         {/* Step Indicator */}
         <div className="flex items-center justify-center gap-2 mb-6">
           <div className={`h-1.5 rounded-full transition-all duration-300 ${step >= 1 ? 'w-8 bg-[#8b5a2b]' : 'w-2 bg-[#d7c4a8]'}`} />
@@ -88,7 +103,7 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onComplete })
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 autoFocus
-                className="w-full px-4 py-3 bg-[#ede2ca] border-2 border-[#8b5a2b]/40 rounded-2xl text-sm font-serif font-bold text-[#2b1810] placeholder-[#8b5a2b]/50 focus:outline-none focus:border-[#6e4624]"
+                className="w-full px-4 py-3 bg-[#ede2ca] border border-[#8b5a2b]/40 rounded-2xl text-sm font-serif font-bold text-[#2b1810] placeholder-[#8b5a2b]/50 focus:outline-none"
               />
             </div>
 
@@ -99,8 +114,8 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onComplete })
               }}
               className="w-full mt-4 bg-[#6e4624] hover:bg-[#573519] text-[#f7f1e1] font-sans font-semibold py-3.5 rounded-2xl shadow-lg flex items-center justify-center gap-2 text-xs uppercase tracking-wider active:scale-98 transition-all"
             >
+              <CheckCircle2 size={16} />
               <span>Next: Set Port of Origin</span>
-              <ChevronRight size={16} />
             </button>
           </div>
         )}
@@ -143,14 +158,14 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onComplete })
                 onClick={() => setStep(1)}
                 className="px-4 py-3 rounded-2xl border border-[#8b5a2b]/40 font-sans text-xs font-semibold text-[#6e4624]"
               >
-                Back
+                <X size={16} />
               </button>
               <button
                 onClick={() => setStep(3)}
                 className="flex-1 bg-[#6e4624] hover:bg-[#573519] text-[#f7f1e1] font-sans font-semibold py-3.5 rounded-2xl shadow-lg flex items-center justify-center gap-2 text-xs uppercase tracking-wider active:scale-98 transition-all"
               >
+                <CheckCircle2 size={16} />
                 <span>Next: Claim Title</span>
-                <ChevronRight size={16} />
               </button>
             </div>
           </div>
@@ -197,8 +212,8 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onComplete })
               onClick={handleFinish}
               className="w-full bg-[#6e4624] hover:bg-[#573519] text-[#f7f1e1] font-sans font-bold py-3.5 rounded-2xl shadow-xl flex items-center justify-center gap-2 text-xs uppercase tracking-wider active:scale-98 transition-all"
             >
+              <CheckCircle2 size={16} />
               <span>Seal & Open Logbook</span>
-              <Sparkles size={16} />
             </button>
           </div>
         )}
