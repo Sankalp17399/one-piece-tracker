@@ -1,4 +1,3 @@
-prev - 1) with setStep(step - 1)">
 "use client";
 
 import React, { useState } from "react";
@@ -32,7 +31,7 @@ const INITIAL_TITLES = [
 
 const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onComplete }) => {
   const [step, setStep] = useState<1 | 2 | 3>(1);
-  const [name, setName] = useState('');
+  const [name, setName] = useState("");
   const [location, setLocation] = useState(STARTING_SEAS[0]);
   const [title, setTitle] = useState(INITIAL_TITLES[0]);
 
@@ -46,24 +45,22 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onComplete })
     });
 
     onComplete({
-      name: name.trim() || 'Captain',
-      location: location.split(' (')[0],
+      name: name.trim() || "Captain",
+      location: location.split(" (")[0],
       title,
-      fruit: 'Unawakened'
+      fruit: "Unawakened"
     });
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4 animate-in fade-in duration-300">
       <div className="w-full max-w-md bg-[#f7f1e1] border-4 border-[#6e4624] rounded-3xl p-6 sm:p-8 shadow-2xl text-[#2b1810] font-serif relative overflow-hidden">
-        {/* Subtle vintage parchment texture vignette */}
         <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(#8b5a2b_1px,transparent_1px)] opacity-5 [background-size:12px_12px]" />
-        
-        {/* Close Button - Icon Only */}
         <button
           onClick={() => {
             if (step > 1) {
-              setStep(step - 1);
+              if (step === 2) setStep(1);
+              else if (step === 3) setStep(2);
             } else {
               handleFinish();
             }
@@ -73,14 +70,12 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onComplete })
           <X size={20} />
         </button>
 
-        {/* Step Indicator */}
         <div className="flex items-center justify-center gap-2 mb-6">
           <div className={`h-1.5 rounded-full transition-all duration-300 ${step >= 1 ? 'w-8 bg-[#8b5a2b]' : 'w-2 bg-[#d7c4a8]'}`} />
           <div className={`h-1.5 rounded-full transition-all duration-300 ${step >= 2 ? 'w-8 bg-[#8b5a2b]' : 'w-2 bg-[#d7c4a8]'}`} />
           <div className={`h-1.5 rounded-full transition-all duration-300 ${step >= 3 ? 'w-8 bg-[#8b5a2b]' : 'w-2 bg-[#d7c4a8]'}`} />
         </div>
 
-        {/* STEP 1: Captain Signature */}
         {step === 1 && (
           <div className="space-y-5 animate-in fade-in slide-in-from-right-4 duration-300">
             <div className="text-center space-y-2">
@@ -92,7 +87,6 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onComplete })
                 Every great journey across the Grand Line begins with a captain signing their journal.
               </p>
             </div>
-
             <div className="space-y-1 pt-2">
               <label className="block text-[11px] font-sans font-bold uppercase tracking-wider text-[#6e4624]">
                 Captain / Navigator Name
@@ -106,10 +100,9 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onComplete })
                 className="w-full px-4 py-3 bg-[#ede2ca] border border-[#8b5a2b]/40 rounded-2xl text-sm font-serif font-bold text-[#2b1810] placeholder-[#8b5a2b]/50 focus:outline-none"
               />
             </div>
-
             <button
               onClick={() => {
-                if (!name.trim()) setName('Captain');
+                if (!name.trim()) setName("Captain");
                 setStep(2);
               }}
               className="w-full mt-4 bg-[#6e4624] hover:bg-[#573519] text-[#f7f1e1] font-sans font-semibold py-3.5 rounded-2xl shadow-lg flex items-center justify-center gap-2 text-xs uppercase tracking-wider active:scale-98 transition-all"
@@ -120,7 +113,6 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onComplete })
           </div>
         )}
 
-        {/* STEP 2: Sea Selection */}
         {step === 2 && (
           <div className="space-y-5 animate-in fade-in slide-in-from-right-4 duration-300">
             <div className="text-center space-y-2">
@@ -132,7 +124,6 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onComplete })
                 Choose the sea where your ship first raised its pirate sail.
               </p>
             </div>
-
             <div className="space-y-2 pt-1">
               {STARTING_SEAS.map((seaOption) => {
                 const isSelected = location === seaOption;
@@ -152,7 +143,6 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onComplete })
                 );
               })}
             </div>
-
             <div className="flex gap-2 pt-2">
               <button
                 onClick={() => setStep(1)}
@@ -171,7 +161,6 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onComplete })
           </div>
         )}
 
-        {/* STEP 3: Epithet & Oath */}
         {step === 3 && (
           <div className="space-y-5 animate-in fade-in slide-in-from-right-4 duration-300">
             <div className="text-center space-y-2">
@@ -183,7 +172,6 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onComplete })
                 How shall rumors of your voyage spread across the seas?
               </p>
             </div>
-
             <div className="grid grid-cols-1 gap-2 pt-1">
               {INITIAL_TITLES.map((t) => {
                 const isSelected = title === t;
@@ -203,11 +191,9 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onComplete })
                 );
               })}
             </div>
-
             <div className="bg-[#ede2ca] p-3 rounded-2xl border border-[#8b5a2b]/30 text-[11px] font-serif text-[#6e4624] italic text-center">
               "To the sea, freedom, and whatever lies at the end of the Grand Line."
             </div>
-
             <button
               onClick={handleFinish}
               className="w-full bg-[#6e4624] hover:bg-[#573519] text-[#f7f1e1] font-sans font-bold py-3.5 rounded-2xl shadow-xl flex items-center justify-center gap-2 text-xs uppercase tracking-wider active:scale-98 transition-all"
